@@ -21,14 +21,6 @@ const sortOptions = [
   { name: "Price: Low to High", href: "#", current: false },
   { name: "Price: High to Low", href: "#", current: false },
 ];
-const subCategories = [
-  { name: "something", href: "#" },
-  { name: "something", href: "#" },
-  { name: "something", href: "#" },
-  { name: "something", href: "#" },
-  { name: "something", href: "#" },
-];
-// const filters = [
 //   {
 //     id: "color",
 //     name: "Color",
@@ -77,17 +69,20 @@ const ProductPage = () => {
   const [productData, setProductData] = useState([]);
   const [message, setMessage] = useState("");
   const [showAlert, setShowAlert] = useState(false);
+  const [categoryData, setCategoryData] = useState([])
 
   // get products
   const getProducts = async () => {
-    setLoading(true)
+    setLoading(true);
 
     try {
       const response = await axios.get("/api/admin/products");
-      setLoading(false)
+      setLoading(false);
       setProductData(response.data);
+      return response
+
     } catch (error) {
-      setLoading(false)
+      setLoading(false);
       setMessage("Internet connection not Stable. ");
       setShowAlert(true);
     }
@@ -99,6 +94,46 @@ const ProductPage = () => {
   useEffect(() => {
     getProducts();
   }, []);
+
+  // get category
+  const getCategory = async () => {
+    try {
+      const categoryData = await axios.get("/api/admin/category");
+      setCategoryData(categoryData.data);
+    } catch (error) {
+      setMessage("Internet Connection not Stable");
+      setShowAlert(true);
+      setTimeout(() => {
+        setShowAlert(true);
+      }, 3000);
+    }
+  };
+  useEffect(() => {
+    getCategory();
+  }, []);
+
+  // handle category search 
+  const handleCategorySearch = async (category) => {
+
+    try {
+
+      const data = await getProducts()
+
+      const filteredData = data.data.filter(item => item.category == category)
+
+      setProductData(filteredData)
+      
+    } catch (error) {
+      setLoading(false);
+      setMessage("Internet connection not Stable. ");
+      setShowAlert(true);
+    }
+
+    setTimeout(() => {
+      setShowAlert(false);
+    }, 3000);
+
+  }
 
   return (
     <div className="bg-white">
@@ -140,7 +175,7 @@ const ProductPage = () => {
             <div className="flex items-center">
               <Menu as="div" className="relative inline-block text-left">
                 <div>
-                  <Menu.Button className="z-0 group inline-flex justify-center text-sm font-medium text-gray-700 hover:text-gray-900">
+                  <Menu.Button className="group inline-flex justify-center text-sm font-medium text-gray-700 hover:text-gray-900">
                     Sort
                     <ChevronDownIcon
                       className="-mr-1 ml-1 h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
@@ -220,70 +255,14 @@ const ProductPage = () => {
                     role="list"
                     className="space-y-4 border-b border-gray-200 pb-6 text-sm font-medium text-gray-900"
                   >
-                    {subCategories.map((category) => (
-                      <li key={category.name}>
-                        <a href={category.href}>{category.name}</a>
-                      </li>
-                    ))}
-                  </ul>
 
-                  {/* {filters.map((section) => (
-                    <Disclosure
-                      as="div"
-                      key={section.id}
-                      className="border-b border-gray-200 py-6"
-                    >
-                      {({ open }) => (
-                        <>
-                          <h3 className="-my-3 flow-root">
-                            <Disclosure.Button className="flex w-full items-center justify-between bg-white py-3 text-sm text-gray-400 hover:text-gray-500">
-                              <span className="font-medium text-gray-900">
-                                {section.name}
-                              </span>
-                              <span className="ml-6 flex items-center">
-                                {open ? (
-                                  <MinusIcon
-                                    className="h-5 w-5"
-                                    aria-hidden="true"
-                                  />
-                                ) : (
-                                  <PlusIcon
-                                    className="h-5 w-5"
-                                    aria-hidden="true"
-                                  />
-                                )}
-                              </span>
-                            </Disclosure.Button>
-                          </h3>
-                          <Disclosure.Panel className="pt-6">
-                            <div className="space-y-4">
-                              {section.options.map((option, optionIdx) => (
-                                <div
-                                  key={option.value}
-                                  className="flex items-center"
-                                >
-                                  <input
-                                    id={`filter-${section.id}-${optionIdx}`}
-                                    name={`${section.id}[]`}
-                                    defaultValue={option.value}
-                                    type="checkbox"
-                                    defaultChecked={option.checked}
-                                    className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                                  />
-                                  <label
-                                    htmlFor={`filter-${section.id}-${optionIdx}`}
-                                    className="ml-3 text-sm text-gray-600"
-                                  >
-                                    {option.label}
-                                  </label>
-                                </div>
-                              ))}
-                            </div>
-                          </Disclosure.Panel>
-                        </>
-                      )}
-                    </Disclosure>
-                  ))} */}
+                    {categoryData.map((category, index) => (
+                    <li key={category._id}>
+                      <a href="#" onClick={() => handleCategorySearch(category.category)} className="capitalize bold text-xl tracking-widest" >{category.category}</a>
+                    </li>
+                    ))}
+
+                  </ul>
                 </form>
               </Transition>
 
@@ -308,7 +287,7 @@ const ProductPage = () => {
                       <h2 className="m-0.5 text-gray-600 text-sm font-bold capitalize">
                         {product.name}
                       </h2>
-                      
+
                       <h2 className="m-0.5 font-bold">Rs {product.price}</h2>
                     </div>
                   </div>
