@@ -1,9 +1,10 @@
 import { Fragment, useState } from "react";
 import { Dialog, Disclosure, Menu, Transition } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
-import Loading from "../components/Loading.jsx";
+import Loading from "../../components/Loading.jsx";
 import { useEffect } from "react";
 import axios from "axios";
+import Router from "next/router.js";
 import {
   ChevronDownIcon,
   FunnelIcon,
@@ -11,8 +12,6 @@ import {
   PlusIcon,
   Squares2X2Icon,
 } from "@heroicons/react/20/solid";
-
-import ProductCard from "../components/ProductCard.jsx";
 
 const sortOptions = [
   { name: "Most Popular", href: "#", current: true },
@@ -69,7 +68,7 @@ const ProductPage = () => {
   const [productData, setProductData] = useState([]);
   const [message, setMessage] = useState("");
   const [showAlert, setShowAlert] = useState(false);
-  const [categoryData, setCategoryData] = useState([])
+  const [categoryData, setCategoryData] = useState([]);
 
   // get products
   const getProducts = async () => {
@@ -79,8 +78,7 @@ const ProductPage = () => {
       const response = await axios.get("/api/admin/products");
       setLoading(false);
       setProductData(response.data);
-      return response
-
+      return response;
     } catch (error) {
       setLoading(false);
       setMessage("Internet connection not Stable. ");
@@ -112,17 +110,16 @@ const ProductPage = () => {
     getCategory();
   }, []);
 
-  // handle category search 
+  // handle category search
   const handleCategorySearch = async (category) => {
-
     try {
+      const data = await getProducts();
 
-      const data = await getProducts()
+      const filteredData = data.data.filter(
+        (item) => item.category == category
+      );
 
-      const filteredData = data.data.filter(item => item.category == category)
-
-      setProductData(filteredData)
-      
+      setProductData(filteredData);
     } catch (error) {
       setLoading(false);
       setMessage("Internet connection not Stable. ");
@@ -132,8 +129,22 @@ const ProductPage = () => {
     setTimeout(() => {
       setShowAlert(false);
     }, 3000);
+  };
 
-  }
+  // redirection to show details page
+  const showDetails = async (id) => {
+    try {
+      Router.push(`/products/${id}`);
+    } catch (error) {
+      setLoading(false);
+      setMessage("Something went Wrong. ");
+      setShowAlert(true);
+    }
+
+    setTimeout(() => {
+      setShowAlert(false);
+    }, 3000);
+  };
 
   return (
     <div className="bg-white">
@@ -172,7 +183,7 @@ const ProductPage = () => {
               New Arrivals
             </h1>
 
-            <div className="flex items-center">
+            <div className="flex items-center z-0">
               <Menu as="div" className="relative inline-block text-left">
                 <div>
                   <Menu.Button className="group inline-flex justify-center text-sm font-medium text-gray-700 hover:text-gray-900">
@@ -255,42 +266,54 @@ const ProductPage = () => {
                     role="list"
                     className="space-y-4 border-b border-gray-200 pb-6 text-sm font-medium text-gray-900"
                   >
-
                     {categoryData.map((category, index) => (
-                    <li key={category._id}>
-                      <a href="#" onClick={() => handleCategorySearch(category.category)} className="capitalize bold text-xl tracking-widest" >{category.category}</a>
-                    </li>
+                      <li key={category._id}>
+                        <a
+                          href="#"
+                          onClick={() =>
+                            handleCategorySearch(category.category)
+                          }
+                          className="capitalize bold text-xl tracking-widest"
+                        >
+                          {category.category}
+                        </a>
+                      </li>
                     ))}
-
                   </ul>
                 </form>
               </Transition>
 
               <div className="min-h-96 md:w-[90%] md:ml-auto py-2 rounded-md border-4 border-dashed border-gray-200 h-auto flex justify-evenly flex-wrap">
                 {productData.map((product, index) => (
-                  <div className="p-2 w-36 md:w-52 max-h-68 m-1 md:p-1 bg-milky flex flex-col justify-between">
-                    <div>
-                      <img
-                        className="ml-[70%] w-10 h-10 bg-themecolor rounded-full p-2 mt-2"
-                        src="/img/buy.png"
-                        alt="buy icon"
-                      />
-                    </div>
-                    <div className="m-4">
-                      <img
-                        className="w-24 md:w-36 m-auto"
-                        src={product.image}
-                        alt="epoxy products"
-                      />
-                    </div>
-                    <div className="w-24 md:w-36 m-4">
-                      <h2 className="m-0.5 text-gray-600 text-sm font-bold capitalize">
-                        {product.name}
-                      </h2>
+                  <a
+                    onClick={() => showDetails(product._id)}
+                    className="flex flex-wrap"
+                  >
+                    <div className="p-2 w-36 md:w-52 max-h-68 m-1 md:p-1 bg-milky flex flex-col justify-between">
+                      <div>
+                        <img
+                          className="ml-[70%] w-10 h-10 bg-themecolor rounded-full p-2 mt-2"
+                          src="/img/buy.png"
+                          alt="buy icon"
+                          onClick={() => showDetails(product._id)}
+                        />
+                      </div>
+                      <div className="m-4">
+                        <img
+                          className="w-24 md:w-36 m-auto"
+                          src={product.image}
+                          alt="epoxy products"
+                        />
+                      </div>
+                      <div className="w-24 md:w-36 m-4">
+                        <h2 className="m-0.5 text-gray-600 text-sm font-bold capitalize">
+                          {product.name}
+                        </h2>
 
-                      <h2 className="m-0.5 font-bold">Rs {product.price}</h2>
+                        <h2 className="m-0.5 font-bold">Rs {product.price}</h2>
+                      </div>
                     </div>
-                  </div>
+                  </a>
                 ))}
               </div>
             </div>

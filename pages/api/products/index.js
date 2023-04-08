@@ -1,34 +1,38 @@
 import connectMongo from "../../../database/conn";
-// import Product from "../../../model/product";
+import Product from "../../../model/product";
 
 export default async function handler(req, res) {
   await connectMongo().catch(() => {
     res.status(405).json({ error: "database error" });
   });
 
-  if (method === "POST") {
+ // GET REQUEST
+ if (req.method == "POST") {
 
-    console.log(req.body)
+  const { id } = req.body
 
-    // try {
+  try {
+    // Find a user by ID in the database
+    const product = await Product.findOne({ id });
 
-    //     const newProduct = new Product({
-    //         productName,
-    //         productDescription,
-    //         productCategory,
-    //         productPrice,
-    //         url,
-    //       });
-
-    //     const savedProduct = await newProduct.save();
-
-    //     res.status(201).json(savedProduct);
-
-    // } catch(error) {
-    //     console.log(error)
-    //     res.status(500).json("Internal Server Error")
-    // }
-
-  
+    if (!product) {
+      // Return a 404 error if user is not found
+      res.status(404).json({ message: "Products not found" });
+    } else {
+      // Return the user as a JSON response
+      res.status(200).json({
+        data: product ,
+        message: "Happy Shoping"
+      });
+    }
+  } catch (error) {
+    // Return a 500 error if there's a server error
+    res.status(500).json({ message: "Server error" });
   }
+} 
+
+else {
+  res.status(405).json({ message: "Method not Allowed" })
+}
+
 }
