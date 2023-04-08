@@ -1,0 +1,30 @@
+.cardContainer {
+    min-width: 15rem;
+    height: auto;
+    margin: 1rem;
+    background-color: #ECF9FF;
+}
+
+.iconBox {
+    margin-top: 1rem;
+    margin-bottom: -2.5rem;
+    margin-left: 70%;
+    display: grid;
+    place-items: center;
+}
+
+.buyIcon {
+    width: 2.5rem;
+    height: 2.5rem;
+    object-fit: cover;
+    background-color: white;
+    border-radius: 50%;
+    padding: 5px;
+    background-color: var(--themecolor);
+}
+
+.price {
+    color: var(--themecolor);
+    font-weight: bold;
+    letter-spacing: 0.1rem;
+}

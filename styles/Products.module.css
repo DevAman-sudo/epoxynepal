@@ -1,0 +1,14 @@
+.productContainer {
+    display: flex;
+    overflow-x: scroll;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    justify-content: space-between;
+}
+
+@media only screen and (min-width: 1280px) {
+    .productContainer {
+        flex-wrap: wrap;
+        justify-content: space-around;
+    }
+}
