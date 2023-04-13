@@ -1,61 +1,10 @@
 import { Fragment, useState } from "react";
-import { Dialog, Disclosure, Menu, Transition } from "@headlessui/react";
-import { XMarkIcon } from "@heroicons/react/24/outline";
+import { Menu, Transition } from "@headlessui/react";
 import Loading from "../../components/Loading.jsx";
 import { useEffect } from "react";
 import axios from "axios";
 import Router from "next/router.js";
-import {
-  ChevronDownIcon,
-  FunnelIcon,
-  MinusIcon,
-  PlusIcon,
-  Squares2X2Icon,
-} from "@heroicons/react/20/solid";
-
-const sortOptions = [
-  { name: "Most Popular", href: "#", current: true },
-  { name: "Best Rating", href: "#", current: false },
-  { name: "Newest", href: "#", current: false },
-  { name: "Price: Low to High", href: "#", current: false },
-  { name: "Price: High to Low", href: "#", current: false },
-];
-//   {
-//     id: "color",
-//     name: "Color",
-//     options: [
-//       { value: "white", label: "White", checked: false },
-//       { value: "beige", label: "Beige", checked: false },
-//       { value: "blue", label: "Blue", checked: true },
-//       { value: "brown", label: "Brown", checked: false },
-//       { value: "green", label: "Green", checked: false },
-//       { value: "purple", label: "Purple", checked: false },
-//     ],
-//   },
-//   {
-//     id: "category",
-//     name: "Category",
-//     options: [
-//       { value: "new-arrivals", label: "New Arrivals", checked: false },
-//       { value: "sale", label: "Sale", checked: false },
-//       { value: "travel", label: "Travel", checked: true },
-//       { value: "organization", label: "Organization", checked: false },
-//       { value: "accessories", label: "Accessories", checked: false },
-//     ],
-//   },
-//   {
-//     id: "size",
-//     name: "Size",
-//     options: [
-//       { value: "2l", label: "2L", checked: false },
-//       { value: "6l", label: "6L", checked: false },
-//       { value: "12l", label: "12L", checked: false },
-//       { value: "18l", label: "18L", checked: false },
-//       { value: "20l", label: "20L", checked: false },
-//       { value: "40l", label: "40L", checked: true },
-//     ],
-//   },
-// ];
+import { ChevronDownIcon, FunnelIcon } from "@heroicons/react/20/solid";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -69,16 +18,26 @@ const ProductPage = () => {
   const [message, setMessage] = useState("");
   const [showAlert, setShowAlert] = useState(false);
   const [categoryData, setCategoryData] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   // get products
   const getProducts = async () => {
     setLoading(true);
 
     try {
-      const response = await axios.get("/api/admin/products");
+      const response = await axios.get(`/api/admin/products`, {
+        params: {
+          page: currentPage, // Pass the current page number as a query parameter
+          limit: itemsPerPage, // Pass the number of items per page as a query parameter
+        },
+      });
+
       setLoading(false);
+
       setProductData(response.data);
-      return response;
+      return response
+    
     } catch (error) {
       setLoading(false);
       setMessage("Internet connection not Stable. ");
@@ -89,6 +48,7 @@ const ProductPage = () => {
       setShowAlert(false);
     }, 3000);
   };
+
   useEffect(() => {
     getProducts();
   }, []);
@@ -112,6 +72,8 @@ const ProductPage = () => {
 
   // handle category search
   const handleCategorySearch = async (category) => {
+    setCurrentPage(1);
+
     try {
       const data = await getProducts();
 
@@ -120,6 +82,7 @@ const ProductPage = () => {
       );
 
       setProductData(filteredData);
+
     } catch (error) {
       setLoading(false);
       setMessage("Internet connection not Stable. ");
@@ -144,6 +107,45 @@ const ProductPage = () => {
     setTimeout(() => {
       setShowAlert(false);
     }, 3000);
+  };
+
+  // get newset Products
+  const getNewest = async () => {
+    try {
+      const response = await axios.get(`/api/admin/products`)
+      const data = response.data.slice(-10).reverse()
+      setProductData(data)
+      setMobileFiltersOpen(false)
+      
+    } catch (error) {
+      console.error("Failed to get newest products:", error);
+    }
+  };
+
+    // get price low to high
+  const getPriceLow = async () => {
+    try {
+      const response = await axios.get(`/api/admin/products`)
+      const sortedData = response.data.sort((a, b) => a.price - b.price);
+      setProductData(sortedData)
+      setMobileFiltersOpen(false)
+      
+    } catch (error) {
+      console.error("Failed to get newest products:", error);
+    }
+  };
+
+   // get price high to low
+  const getPriceHigh = async () => {
+    try {
+      const response = await axios.get(`/api/admin/products`)
+      const sortedData = response.data.sort((a, b) => b.price - a.price);
+      setProductData(sortedData)
+      setMobileFiltersOpen(false)
+      
+    } catch (error) {
+      console.error("Failed to get newest products:", error);
+    }
   };
 
   return (
@@ -183,20 +185,23 @@ const ProductPage = () => {
               New Arrivals
             </h1>
 
-            <div className="flex items-center z-0">
-              <Menu as="div" className="relative inline-block text-left">
+            <div className="flex items-center">
+              <div className="text-left">
                 <div>
-                  <Menu.Button className="group inline-flex justify-center text-sm font-medium text-gray-700 hover:text-gray-900">
+                  <div
+                    className="group inline-flex justify-center text-sm font-medium text-gray-700 hover:text-gray-900"
+                    onClick={() => setMobileFiltersOpen(!mobileFiltersOpen)}
+                  >
                     Sort
                     <ChevronDownIcon
                       className="-mr-1 ml-1 h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
                       aria-hidden="true"
                     />
-                  </Menu.Button>
+                  </div>
                 </div>
 
                 <Transition
-                  as={Fragment}
+                  show={mobileFiltersOpen}
                   enter="transition ease-out duration-100"
                   enterFrom="transform opacity-0 scale-95"
                   enterTo="transform opacity-100 scale-100"
@@ -204,30 +209,37 @@ const ProductPage = () => {
                   leaveFrom="transform opacity-100 scale-100"
                   leaveTo="transform opacity-0 scale-95"
                 >
-                  <Menu.Items className="absolute right-0 z-10 mt-2 w-40 origin-top-right rounded-md bg-white shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none">
+                  <div className="absolute right-0 z-10 mt-2 w-40 origin-top-right rounded-md bg-white shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none">
                     <div className="py-1">
-                      {sortOptions.map((option) => (
-                        <Menu.Item key={option.name}>
-                          {({ active }) => (
-                            <a
-                              href={option.href}
-                              className={classNames(
-                                option.current
-                                  ? "font-medium text-gray-900"
-                                  : "text-gray-500",
-                                active ? "bg-gray-100" : "",
-                                "block px-4 py-2 text-sm"
-                              )}
-                            >
-                              {option.name}
-                            </a>
-                          )}
-                        </Menu.Item>
-                      ))}
+                      <a
+                        href="#"
+                        className="font-medium text-gray-90 bg-gray-100 block px-4 py-2 text-sm"
+                        onClick={getNewest}
+                      >
+                        Newest
+                      </a>
                     </div>
-                  </Menu.Items>
+                    <div className="py-1">
+                      <a
+                        href="#"
+                        className="font-medium text-gray-90 bg-gray-100 block px-4 py-2 text-sm"
+                         onClick={getPriceLow}
+                      >
+                        Price: Low to High
+                      </a>
+                    </div>
+                    <div className="py-1">
+                      <a
+                        href="#"
+                        className="font-medium text-gray-90 bg-gray-100 block px-4 py-2 text-sm"
+                        onClick={getPriceHigh}
+                      >
+                        Price: High to Low
+                      </a>
+                    </div>
+                  </div>
                 </Transition>
-              </Menu>
+              </div>
 
               <button
                 type="button"
@@ -284,92 +296,66 @@ const ProductPage = () => {
               </Transition>
 
               <div className="min-h-96 md:w-[90%] md:ml-auto py-2 rounded-md border-4 border-dashed border-gray-200 h-auto flex justify-evenly flex-wrap">
-                {productData.map((product, index) => (
-                  <a
-                    onClick={() => showDetails(product._id)}
-                    className="flex flex-wrap"
-                  >
-                    <div className="p-2 w-36 md:w-52 max-h-68 m-1 md:p-1 bg-milky flex flex-col justify-between">
-                      <div>
-                        <img
-                          className="ml-[70%] w-10 h-10 bg-themecolor rounded-full p-2 mt-2"
-                          src="/img/buy.png"
-                          alt="buy icon"
-                          onClick={() => showDetails(product._id)}
-                        />
-                      </div>
-                      <div className="m-4">
-                        <img
-                          className="w-24 md:w-36 m-auto"
-                          src={product.image}
-                          alt="epoxy products"
-                        />
-                      </div>
-                      <div className="w-24 md:w-36 m-4">
-                        <h2 className="m-0.5 text-gray-600 text-sm font-bold capitalize">
-                          {product.name}
-                        </h2>
+                {productData
+                  .slice(
+                    (currentPage - 1) * itemsPerPage,
+                    currentPage * itemsPerPage
+                  )
+                  .map((product) => (
+                    <a
+                      onClick={() => showDetails(product._id)}
+                      className="flex flex-wrap"
+                    >
+                      <div className="p-2 w-36 md:w-52 max-h-68 m-1 md:p-1 bg-milky flex flex-col justify-between">
+                        <div>
+                          <img
+                            className="ml-[70%] w-10 h-10 bg-themecolor rounded-full p-2 mt-2"
+                            src="/img/buy.png"
+                            alt="buy icon"
+                            onClick={() => showDetails(product._id)}
+                          />
+                        </div>
+                        <div className="m-4">
+                          <img
+                            className="w-24 md:w-36 m-auto"
+                            src={product.image}
+                            alt="epoxy products"
+                          />
+                        </div>
+                        <div className="w-24 md:w-36 m-4">
+                          <h2 className="m-0.5 text-gray-600 text-sm font-bold capitalize">
+                            {product.name}
+                          </h2>
 
-                        <h2 className="m-0.5 font-bold">Rs {product.price}</h2>
+                          <h2 className="m-0.5 font-bold">
+                            Rs {product.price}
+                          </h2>
+                        </div>
                       </div>
-                    </div>
-                  </a>
-                ))}
+                    </a>
+                  ))}
               </div>
             </div>
           </section>
 
-          <div className="flex justify-center my-4">
-            <nav className="inline-flex rounded-md shadow-md overflow-hidden">
-              <a
-                href="#"
-                className="px-3 py-2 bg-milky text-gray-700 rounded-l-md"
-              >
-                <svg
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                  className="chevron-left w-6 h-6"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M14.707 5.293a1 1 0 010 1.414L10.414 10l4.293 4.293a1 1 0 01-1.414 1.414l-5-5a1 1 0 010-1.414l5-5a1 1 0 011.414 0z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              </a>
-              <a href="#" className="px-3 py-2 bg-milky text-gray-700">
-                1
-              </a>
-              <a href="#" className="px-3 py-2 bg-milky text-gray-700">
-                2
-              </a>
-              <a href="#" className="px-3 py-2 bg-milky text-gray-700">
-                3
-              </a>
-              <a href="#" className="px-3 py-2 bg-milky text-gray-700">
-                4
-              </a>
-              <span className="px-3 py-2 bg-milky text-gray-700">...</span>
-              <a href="#" className="px-3 py-2 bg-milky text-gray-700">
-                12
-              </a>
-              <a
-                href="#"
-                className="px-3 py-2 bg-milky text-gray-700 rounded-r-md"
-              >
-                <svg
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                  className="chevron-right w-6 h-6"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M5.293 14.707a1 1 0 01-1.414-1.414L9.586 10l-5.293-5.293a1 1 0 011.414-1.414l5 5a1 1 0 010 1.414l-5 5z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              </a>
-            </nav>
+          {/* pagination  */}
+          <div className="flex justify-center m-4">
+            <button
+              onClick={() => setCurrentPage(currentPage - 1)}
+              disabled={currentPage === 1}
+              className="mr-2 bg-themecolor hover:bg-blue-600 text-white px-4 py-2 rounded-md"
+            >
+              Previous
+            </button>
+            <button
+              onClick={() => setCurrentPage(currentPage + 1)}
+              disabled={
+                currentPage === Math.ceil(productData.length / itemsPerPage)
+              }
+              className="bg-themecolor hover:bg-blue-600 text-white px-4 py-2 rounded-md"
+            >
+              Next
+            </button>
           </div>
         </main>
       </div>

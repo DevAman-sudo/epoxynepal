@@ -1,10 +1,26 @@
-import React from "react";
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "../styles/Navbar.module.css";
 import { Transition } from "@headlessui/react";
+import Cookies from "js-cookie";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [cartNumber, setCartNumber] = useState(0);
+  const quantity = Cookies.get("quantity");
+
+  // Function to update cartNumber based on the quantity cookie value
+  const updateCartNumber = () => {
+    if (quantity == null) {
+      setCartNumber(0);
+    } else {
+      setCartNumber(quantity);
+    }
+  };
+
+  // Set up cookie change listener
+  useEffect(() => {
+    updateCartNumber(quantity)
+  }, []);
 
   return (
     <>
@@ -60,23 +76,21 @@ const Navbar = () => {
           <div className="flex items-center"></div>
           <ul className="flex items-center space-x-6">
             <a href="/signup" className="md:flex font-semibold text-gray-700">
-              <li className="px-1 hidden md:block">
-                Account
-              </li>
-            
-            <svg
-              className={styles.svg}
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 64 64"
-            >
-              <path d="M32,2A30.034,30.034,0,0,0,2,32a29.6307,29.6307,0,0,0,1.1387,8.1758,1,1,0,1,0,1.9218-.5518A27.64,27.64,0,0,1,4,32a28,28,0,0,1,56,0,27.64,27.64,0,0,1-1.06,7.624,1,1,0,1,0,1.9218.5518A29.6307,29.6307,0,0,0,62,32,30.034,30.034,0,0,0,32,2Z" />
-              <path d="M37.8383,35.5991a13,13,0,1,0-11.6766,0,28.89,28.89,0,0,0-16.5474,9.97,5.0514,5.0514,0,0,0,.1484,6.564,29.9923,29.9923,0,0,0,44.4746,0,5.0514,5.0514,0,0,0,.1484-6.564A28.89,28.89,0,0,0,37.8383,35.5991Z" />
-            </svg>
+              <li className="px-1 hidden md:block">Account</li>
+
+              <svg
+                className={styles.svg}
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 64 64"
+              >
+                <path d="M32,2A30.034,30.034,0,0,0,2,32a29.6307,29.6307,0,0,0,1.1387,8.1758,1,1,0,1,0,1.9218-.5518A27.64,27.64,0,0,1,4,32a28,28,0,0,1,56,0,27.64,27.64,0,0,1-1.06,7.624,1,1,0,1,0,1.9218.5518A29.6307,29.6307,0,0,0,62,32,30.034,30.034,0,0,0,32,2Z" />
+                <path d="M37.8383,35.5991a13,13,0,1,0-11.6766,0,28.89,28.89,0,0,0-16.5474,9.97,5.0514,5.0514,0,0,0,.1484,6.564,29.9923,29.9923,0,0,0,44.4746,0,5.0514,5.0514,0,0,0,.1484-6.564A28.89,28.89,0,0,0,37.8383,35.5991Z" />
+              </svg>
             </a>
-            <a href="/cart" className="md:flex font-semibold text-gray-700">
-              <li className="px-1 hidden md:block">
-                Cart
-              </li>
+
+            <a href="/cart" className="flex font-semibold text-gray-700">
+              <li className="px-1 hidden md:block">Cart</li>
+
               <svg
                 className={styles.svg}
                 xmlns="http://www.w3.org/2000/svg"
@@ -87,6 +101,11 @@ const Navbar = () => {
                 <path d="M9.46 14a1.25 1.25 0 0 1-1.21-1L6.46 5.23A3.21 3.21 0 0 0 3.32 2.75H1.69a1.25 1.25 0 0 1 0-2.5H3.32A5.71 5.71 0 0 1 8.9 4.66l1.78 7.77a1.24 1.24 0 0 1-.93 1.5A1.43 1.43 0 0 1 9.46 14zM15.11 34.75a4 4 0 1 1 4-4A4 4 0 0 1 15.11 34.75zm0-5.54a1.52 1.52 0 1 0 1.52 1.52A1.52 1.52 0 0 0 15.11 29.21zM28.93 34.75a4 4 0 1 1 4-4A4 4 0 0 1 28.93 34.75zm0-5.54a1.52 1.52 0 1 0 1.53 1.52A1.52 1.52 0 0 0 28.93 29.21z" />
                 <path d="M28.93,29.21H12.27a3.89,3.89,0,1,1,0-7.78h2.65a1.25,1.25,0,1,1,0,2.5H12.27a1.39,1.39,0,1,0,0,2.78H28.93a1.25,1.25,0,0,1,0,2.5Z" />
               </svg>
+
+              {/* cart number  */}
+              <span className="bg-themecolor font-bold-900 text-white p-3 rounded-full w-5 h-5 text-[0.8rem] flex items-center justify-center mt-[-0.5rem] ml-[-0.4rem]">
+                {cartNumber}
+              </span>
             </a>
             <a onClick={() => setIsOpen(!isOpen)}>
               <img src="/img/menu.png" className="w-8" alt="menu" />
@@ -108,13 +127,17 @@ const Navbar = () => {
       >
         <div className="md:block md:mt-0">
           <ul className="bg-white shadow-md transform translate-y-2 md:flex absolute md:relative top-[15%] right-[0%] h-full w-[80%] ml-[10%]  justify-evenly flex-col p-4 mt-4 border border-gray-100 md:flex-row md:space-x-8 md:mt-0 md:text-sm md:font-medium md:border-0 md:bg-white">
-          <li className="mt-4 md:mt-0 border-b text-themecolor border-gray-400 md:border-none pb-2 md:pb-0">
+            <li className="mt-4 md:mt-0 border-b text-themecolor border-gray-400 md:border-none pb-2 md:pb-0">
               <a className={styles.menuItems} href="/" aria-current="page">
                 Home
               </a>
             </li>
             <li className="mt-4 md:mt-0 border-b text-themecolor border-gray-400 md:border-none pb-2 md:pb-0">
-              <a className={styles.menuItems} href="/products" aria-current="page">
+              <a
+                className={styles.menuItems}
+                href="/products"
+                aria-current="page"
+              >
                 Shop
               </a>
             </li>
@@ -125,7 +148,11 @@ const Navbar = () => {
             </li>
 
             <li className="mt-4 md:mt-0 border-b border-gray-400 md:border-none pb-2 md:pb-0">
-              <a className={styles.menuItems} href="/contact" aria-current="page">
+              <a
+                className={styles.menuItems}
+                href="/contact"
+                aria-current="page"
+              >
                 Contact
               </a>
             </li>
@@ -137,7 +164,11 @@ const Navbar = () => {
             </li>
 
             <li className="mt-4 md:mt-0 border-b border-gray-400 md:border-none pb-2 md:pb-0">
-              <a className={styles.menuItems} href="/signup" aria-current="page">
+              <a
+                className={styles.menuItems}
+                href="/signup"
+                aria-current="page"
+              >
                 SignUp
               </a>
             </li>
