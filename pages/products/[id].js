@@ -1,29 +1,32 @@
-import { info } from "autoprefixer";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import Router from "next/router";
 import axios from "axios";
 import Loading from "../../components/Loading";
+import Cookies from "js-cookie";
+import AppContext from "../../components/context/AppContext";
 
 const Details = () => {
-  const [loading, setLoading] = useState(false)
+  const context = useContext(AppContext)
+
+  const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [showAlert, setShowAlert] = useState(false);
-  const [productData, setProductData] = useState([])
+  const [productData, setProductData] = useState([]);
+
+  const token = Cookies.get("token");
+  const userId = Cookies.get("user_id");
 
   // getProducts
   const getProducts = async () => {
-
-    setLoading(true)
+    setLoading(true);
     const id = Router.query.id;
 
     try {
-
-      const response = await axios.post('/api/products', id)
-      setLoading(false)
-      setMessage(response.data.message)
-      setShowAlert(true)
-      setProductData(response.data.data)
-
+      const response = await axios.post("/api/products", id);
+      setLoading(false);
+      setMessage(response.data.message);
+      setShowAlert(true);
+      setProductData(response.data.data);
     } catch (error) {
       setLoading(false);
       setMessage("Something Went Wrong. ");
@@ -37,6 +40,36 @@ const Details = () => {
   useEffect(() => {
     getProducts();
   }, []);
+
+  // handle buy function
+  const handleBuy = async () => {
+    setLoading(true);
+
+    if (!token && !userId) {
+      Router.push("/login?message=Please Log In");
+    } else {
+      try {
+        const productId = Router.query.id;
+        const cartNumber = context.cartNumber
+        const newProductData = [...context.productData, productId];
+
+        // context.setCartNumber(cartNumber + 1)
+        context.setProductData(newProductData)
+        Router.push("/cart?message=Items added to Cart");
+
+        setLoading(false)
+
+      } catch (error) {
+        console.log(error);
+        setLoading(false);
+        setMessage("Something Went Wrong. ");
+        setShowAlert(true);
+      }
+      setTimeout(() => {
+        setShowAlert(false);
+      }, 3000);
+    }
+  };
 
   return (
     <div>
@@ -74,7 +107,11 @@ const Details = () => {
             <div className="md:flex items-center -mx-10">
               <div className="w-full md:w-1/2 px-10 mb-10 md:mb-0">
                 <div className="relative">
-                  <img src={productData.image} className="w-full relative z-50" alt="" />
+                  <img
+                    src={productData.image}
+                    className="w-full relative z-50"
+                    alt=""
+                  />
                   <div className="border-4 border-themecolor absolute top-10 bottom-10 left-10 right-10 z-0"></div>
                 </div>
               </div>
@@ -95,7 +132,10 @@ const Details = () => {
                     </span>
                   </div>
                   <div className="inline-block align-bottom">
-                    <button className="bg-themecolor text-white hover:text-gray-300 rounded-full px-10 py-2 font-semibold">
+                    <button
+                      className="bg-themecolor text-white hover:text-gray-300 rounded-full px-10 py-2 font-semibold"
+                      onClick={handleBuy}
+                    >
                       <i className="mdi mdi-cart -ml-2 mr-2"></i> BUY NOW
                     </button>
                   </div>

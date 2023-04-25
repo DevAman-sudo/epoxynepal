@@ -1,26 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import styles from "../styles/Navbar.module.css";
 import { Transition } from "@headlessui/react";
+import AppContext from "./context/AppContext";
 import Cookies from "js-cookie";
 
 const Navbar = () => {
+  const context = useContext(AppContext)
   const [isOpen, setIsOpen] = useState(false);
-  const [cartNumber, setCartNumber] = useState(0);
-  const quantity = Cookies.get("quantity");
-
-  // Function to update cartNumber based on the quantity cookie value
-  const updateCartNumber = () => {
-    if (quantity == null) {
-      setCartNumber(0);
-    } else {
-      setCartNumber(quantity);
-    }
-  };
-
-  // Set up cookie change listener
-  useEffect(() => {
-    updateCartNumber(quantity)
-  }, []);
 
   return (
     <>
@@ -104,7 +90,7 @@ const Navbar = () => {
 
               {/* cart number  */}
               <span className="bg-themecolor font-bold-900 text-white p-3 rounded-full w-5 h-5 text-[0.8rem] flex items-center justify-center mt-[-0.5rem] ml-[-0.4rem]">
-                {cartNumber}
+                {context.cartNumber}
               </span>
             </a>
             <a onClick={() => setIsOpen(!isOpen)}>

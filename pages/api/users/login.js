@@ -26,9 +26,9 @@ export default async function handler(req, res) {
       try {
         // Check if user exists in the database
         const user = await Users.findOne({ email });
-        const isMatch = await bcrypt.compare(password, user.password)
+        const isMatch = bcrypt.compare(password, user.password)
         console.log(isMatch)
-        console.log(user.password)
+        console.log(password)
 
         if (!user) {
           return res.status(404).json({ message: "User not found." });

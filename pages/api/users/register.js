@@ -1,10 +1,10 @@
 import jwt from "jsonwebtoken";
 import nodemailer from "nodemailer";
 import { v4 as uuidv4 } from "uuid";
-import { Buffer } from 'buffer';
+import { Buffer } from "buffer";
 import Cookies from "js-cookie";
 
-import Users from '../../../model/user'
+import Users from "../../../model/user";
 import connectMongo from "../../../database/conn";
 
 const transporter = nodemailer.createTransport({
@@ -24,16 +24,13 @@ export default async function handler(req, res) {
   const { method } = req;
   const uniqueID = uuidv4(); // generates a new UUID
 
-
   if (method === "POST") {
-
     const name = req.body;
     const email = req.body;
     const password = req.body;
-    const key = Buffer.from(password).toString('base64');
-    
+    const key = Buffer.from(password).toString("base64");
+
     try {
-      // Check if user already exists in the database
       const existingUser = await Users.findOne({ email });
 
       if (existingUser) {
@@ -47,7 +44,7 @@ export default async function handler(req, res) {
         const mailOptions = {
           from: process.env.EMAIL_USER,
           to: email,
-          subject: 'Verify your email address',
+          subject: "Verify your email address",
           html: `<p style="color: #333;">Please click <a href="${verificationLink}">here</a> to verify your email address.</p>`,
         };
         await transporter.sendMail(mailOptions);
@@ -55,7 +52,7 @@ export default async function handler(req, res) {
         res.status(201).json({
           message: "Verification email sent.",
           token,
-          key
+          key,
         });
       }
     } catch (error) {
