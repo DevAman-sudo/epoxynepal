@@ -61,15 +61,14 @@ const Details = () => {
     setLoading(true);
 
     if (!token && !userId) {
-      Router.push("/login?message=Please Log In");
+      router.push("/login?message=Please Log In");
     } else {
       try {
-        const productId = Router.query.id;
-        const cartNumber = context.cartNumber;
+        const productId = router.query.id;
         const newProductData = [...context.productData, { productId, num }];
 
         context.setProductData(newProductData);
-        Router.push("/cart?message=Items added to Cart");
+        router.push("/cart?message=Items added to Cart");
 
         setLoading(false);
       } catch (error) {
