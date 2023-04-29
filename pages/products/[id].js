@@ -6,15 +6,25 @@ import Cookies from "js-cookie";
 import AppContext from "../../components/context/AppContext";
 
 const Details = () => {
-  const context = useContext(AppContext)
+  const context = useContext(AppContext);
 
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [showAlert, setShowAlert] = useState(false);
   const [productData, setProductData] = useState([]);
+  const [num, setNum] = useState(1);
 
   const token = Cookies.get("token");
   const userId = Cookies.get("user_id");
+
+  // number increment and decrement
+  const setDecrease = () => {
+    num > 1 ? setNum(num -1) : setNum(1)
+  };
+
+  const setIncrease = () => {
+    setNum(num + 1)
+  };
 
   // getProducts
   const getProducts = async () => {
@@ -50,15 +60,13 @@ const Details = () => {
     } else {
       try {
         const productId = Router.query.id;
-        const cartNumber = context.cartNumber
-        const newProductData = [...context.productData, productId];
+        const cartNumber = context.cartNumber;
+        const newProductData = [...context.productData, {productId , num}];
 
-        // context.setCartNumber(cartNumber + 1)
-        context.setProductData(newProductData)
+        context.setProductData(newProductData);
         Router.push("/cart?message=Items added to Cart");
 
-        setLoading(false)
-
+        setLoading(false);
       } catch (error) {
         console.log(error);
         setLoading(false);
@@ -131,6 +139,30 @@ const Details = () => {
                       {productData.price}
                     </span>
                   </div>
+
+                  <div className="flex items-center my-4 w-12 h-auto border-gray-900">
+                    <span
+                      className="cursor-pointer rounded-l bg-gray-100 py-1 px-3.5 duration-100 hover:bg-themecolor hover:text-blue-50"
+                      onClick={setDecrease}
+                    >
+                      {" "}
+                      -{" "}
+                    </span>
+                    <input
+                      className="h-8 w-14 font-bold border bg-white text-center text-xs outline-none m-auto flex items-center appearance-none rounded"
+                      type="number"
+                      value={num}
+                      min="1"
+                    />
+                    <span
+                      className="cursor-pointer rounded-r bg-gray-100 py-1 px-3 duration-100 hover:bg-themecolor hover:text-blue-50"
+                      onClick={setIncrease}
+                    >
+                      {" "}
+                      +{" "}
+                    </span>
+                  </div>
+
                   <div className="inline-block align-bottom">
                     <button
                       className="bg-themecolor text-white hover:text-gray-300 rounded-full px-10 py-2 font-semibold"

@@ -14,16 +14,17 @@ const cart = () => {
 
   useEffect(() => {
     // get total price
-    const getTotalPrice = () => {
-      const data = JSON.parse(localStorage.getItem("products"));
+    function getTotalPrice() {
+      const cartItems = JSON.parse(localStorage.getItem("products"));
 
-      let total = 0;
-      for (let i = 0; i < data.length; i++) {
-        total += data[i].price;
-      }
+      const totalPrice = cartItems.reduce((accumulator, currentItem) => {
+        const productPrice = currentItem.price * currentItem.num;
+        return accumulator + productPrice;
+      }, 0);
 
-      setTotalPrice(total);
-    };
+      setTotalPrice(totalPrice);
+      return totalPrice;
+    }
 
     const getProducts = async () => {
       setLoading(true);
@@ -32,12 +33,25 @@ const cart = () => {
         const response = await axios.get(`/api/admin/products`);
 
         // Filter the product data based on the IDs in context productData
-        const filteredData = response.data.filter((product) =>
-          context.productData.includes(product._id)
-        );
+        const productIds = context.productData.map((item) => item.productId);
 
-        // Store the product data in local storage whenever it changes
-        localStorage.setItem("products", JSON.stringify(filteredData));
+        const filteredData = response.data.filter((product) => {
+          return productIds.includes(product._id);
+        });
+
+        // update products from local storage
+        const storeProducts = filteredData;
+        const cartItems = JSON.parse(localStorage.getItem("productData"));
+
+        const updatedProducts = storeProducts.map((product) => {
+          const cartItem = cartItems.find(
+            (item) => item.productId === product._id
+          );
+          const num = cartItem ? cartItem.num : 0;
+          return { ...product, num };
+        });
+
+        localStorage.setItem("products", JSON.stringify(updatedProducts));
 
         // Set the product data from local storage on component mount
         const storedProductData = JSON.parse(localStorage.getItem("products"));
@@ -62,12 +76,12 @@ const cart = () => {
 
   // remove items from cart
   function handleDeleteFunction(id) {
-    const productData = JSON.parse(localStorage.getItem("productData"));
+    const cartItems = JSON.parse(localStorage.getItem("productData"));
 
-    const newProductData = productData.filter((product) => product !== id);
+    const updatedCartItems = cartItems.filter((item) => item.productId !== id);
 
-    localStorage.setItem("productData", JSON.stringify(newProductData));
-    localStorage.setItem("cartNumber", newProductData.length);
+    localStorage.setItem("productData", JSON.stringify(updatedCartItems));
+    localStorage.setItem("cartNumber", updatedCartItems.length);
 
     const cartNumber = localStorage.getItem("cartNumber");
     context.setCartNumber(cartNumber);
@@ -81,11 +95,6 @@ const cart = () => {
       <div>
         <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="max-w-lg mx-auto">
-            {/* <img
-              src="https://cdn.pixabay.com/photo/2016/06/09/18/36/shopping-cart-1443568_960_720.png"
-              alt="Empty Cart"
-              className="mx-auto w-32 h-32 mb-6"
-            /> */}
             <h1 className="text-xl font-bold text-gray-800 mb-2">
               Your cart is empty
             </h1>
@@ -153,30 +162,17 @@ const cart = () => {
                       </h2>
                     </div>
                     <div className="mt-4 flex justify-between sm:space-y-6 sm:mt-0 sm:block sm:space-x-6">
-                      {/* <div className="flex items-center border-gray-100">
-                      <span
-                        className="cursor-pointer rounded-l bg-gray-100 py-1 px-3.5 duration-100 hover:bg-themecolor hover:text-blue-50"
-                        onClick={ () => setDecrease(product._id)}
-                      >
-                        {" "}
-                        -{" "}
-                      </span>
-                      <input
-                        className="h-8 w-8 border bg-white text-center text-xs outline-none m-auto"
-                        type="number"
-                        value={num}
-                        min="1"
-                      />
-                      <span
-                        className="cursor-pointer rounded-r bg-gray-100 py-1 px-3 duration-100 hover:bg-themecolor hover:text-blue-50"
-                        onClick={setIncrease}
-                      >
-                        {" "}
-                        +{" "}
-                      </span>
-                    </div> */}
+                      <div className="flex items-center border-gray-100">
+                        <input
+                          className="h-8 w-8 border bg-white text-center text-xs outline-none m-auto"
+                          type="number"
+                          value={product.num}
+                        />
+                      </div>
                       <div className="flex items-center space-x-4">
-                        <p className="text-sm">Rs {product.price} </p>
+                        <p className="text-sm">
+                          Rs {product.price * product.num}{" "}
+                        </p>
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           fill="none"
