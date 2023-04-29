@@ -11,7 +11,7 @@ const Details = () => {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [showAlert, setShowAlert] = useState(false);
-  const [productData, setProductData] = useState([]);
+  const [productDataLocal, setProductDataLocal] = useState([]);
   const [num, setNum] = useState(1);
 
   const token = Cookies.get("token");
@@ -36,7 +36,7 @@ const Details = () => {
       setLoading(false);
       setMessage(response.data.message);
       setShowAlert(true);
-      setProductData(response.data.data);
+      setProductDataLocal(response.data.data);
     } catch (error) {
       setLoading(false);
       setMessage("Something Went Wrong. ");
@@ -116,7 +116,7 @@ const Details = () => {
               <div className="w-full md:w-1/2 px-10 mb-10 md:mb-0">
                 <div className="relative">
                   <img
-                    src={productData.image}
+                    src={productDataLocal.image}
                     className="w-full relative z-50"
                     alt=""
                   />
@@ -126,9 +126,9 @@ const Details = () => {
               <div className="w-full md:w-1/2 px-10">
                 <div className="mb-10">
                   <h1 className="font-bold uppercase text-2xl mb-5">
-                    {productData.name}
+                    {productDataLocal.name}
                   </h1>
-                  <p className="text-sm">{productData.description}</p>
+                  <p className="text-sm">{productDataLocal.description}</p>
                 </div>
                 <div>
                   <div className="inline-block align-bottom mr-5">
@@ -136,7 +136,7 @@ const Details = () => {
                       Rs
                     </span>
                     <span className="font-bold text-5xl leading-none align-baseline">
-                      {productData.price}
+                      {productDataLocal.price}
                     </span>
                   </div>
 

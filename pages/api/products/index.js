@@ -21,8 +21,7 @@ export default async function handler(req, res) {
     } else {
       // Return the user as a JSON response
       res.status(200).json({
-        data: product ,
-        message: "Happy Shoping"
+        data: product 
       });
     }
   } catch (error) {
