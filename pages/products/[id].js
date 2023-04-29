@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import Router from "next/router";
+import { useRouter } from "next/router";
 import axios from "axios";
 import Loading from "../../components/Loading";
 import Cookies from "js-cookie";
@@ -7,6 +7,7 @@ import AppContext from "../../components/context/AppContext";
 
 const Details = () => {
   const context = useContext(AppContext);
+  const router = useRouter();
 
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
@@ -19,24 +20,28 @@ const Details = () => {
 
   // number increment and decrement
   const setDecrease = () => {
-    num > 1 ? setNum(num -1) : setNum(1)
+    num > 1 ? setNum(num - 1) : setNum(1);
   };
 
   const setIncrease = () => {
-    setNum(num + 1)
+    setNum(num + 1);
   };
 
   // getProducts
   const getProducts = async () => {
     setLoading(true);
-    const id = Router.query.id;
+    const { id } = router.query;
+
+    const idData = id
 
     try {
-      const response = await axios.post("/api/products", id);
-      setLoading(false);
-      setMessage(response.data.message);
-      setShowAlert(true);
-      setProductDataLocal(response.data.data);
+     
+      const response = await axios.get('/api/admin/products')
+      const data = response.data
+      const foundData = data.find((item) => item._id === idData);
+      setProductDataLocal(foundData);
+      setLoading(false)
+
     } catch (error) {
       setLoading(false);
       setMessage("Something Went Wrong. ");
@@ -61,7 +66,7 @@ const Details = () => {
       try {
         const productId = Router.query.id;
         const cartNumber = context.cartNumber;
-        const newProductData = [...context.productData, {productId , num}];
+        const newProductData = [...context.productData, { productId, num }];
 
         context.setProductData(newProductData);
         Router.push("/cart?message=Items added to Cart");
