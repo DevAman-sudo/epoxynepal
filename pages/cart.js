@@ -1,10 +1,14 @@
 import React, { useState, useContext, useEffect } from "react";
+import { useRouter } from "next/router";
 import axios from "axios";
 import AppContext from "../components/context/AppContext";
 import Loading from "../components/Loading";
+import Cookies from "js-cookie";
 
 const cart = () => {
   const context = useContext(AppContext);
+  const router = useRouter();
+
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [showAlert, setShowAlert] = useState(false);
@@ -73,6 +77,11 @@ const cart = () => {
 
     getProducts();
   }, [context.productData]);
+
+  // handle save cart items
+  const handleSaveCart = async () => {
+   router.push("/gateway")
+  };
 
   // remove items from cart
   function handleDeleteFunction(id) {
@@ -213,7 +222,10 @@ const cart = () => {
                   </p>
                 </div>
               </div>
-              <button className="mt-6 w-full rounded-md bg-themecolor py-1.5 font-medium text-blue-50 hover:bg-blue-600">
+              <button
+                className="mt-6 w-full rounded-md bg-themecolor py-1.5 font-medium text-blue-50 hover:bg-blue-600"
+                onClick={handleSaveCart}
+              >
                 Check out
               </button>
             </div>
