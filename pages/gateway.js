@@ -2,14 +2,18 @@ import React, { useContext, useState, useEffect } from "react";
 import Router from "next/router";
 import Cookies from "js-cookie";
 import Loading from "../components/Loading";
+import axios from "axios";
 
 const gateway = () => {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [showAlert, setShowAlert] = useState(false);
   const [productData, setProductData] = useState([]);
-  const [totalPrice, setTotalPrice] = useState(0)
-  const [shipingCost, setShipingCost] = useState(1500)
+  const [totalPrice, setTotalPrice] = useState(0);
+  const [shipingCost, setShipingCost] = useState(1500);
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [address, setAddress] = useState("");
+  const [apartment, setApartment] = useState("");
 
   const userId = Cookies.get("user_id");
   const token = Cookies.get("token");
@@ -37,11 +41,9 @@ const gateway = () => {
 
         try {
           const cartItems = JSON.parse(localStorage.getItem("products"));
-
           setProductData(cartItems);
-          getTotalPrice()
+          getTotalPrice();
           setLoading(false);
-
         } catch (error) {
           setLoading(false);
           setMessage("Something went Wrong. ");
@@ -55,6 +57,49 @@ const gateway = () => {
     }
   }, []);
 
+  // handeling checkout data
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    setLoading(true)
+
+    const cartItems = JSON.parse(localStorage.getItem("products"))
+    
+    try {
+
+      const response = await axios.post('/api/checkout', {
+        userId,
+        cartItems,
+        phoneNumber,
+        address,
+        apartment
+      })
+
+      if (response.statusText == 'OK') {
+
+        localStorage.removeItem("productData")
+        localStorage.removeItem("products")
+        localStorage.removeItem("cartNumber")
+
+        Router.push(`/profile/${userId}`)
+
+      } else {
+        setLoading(false)
+        setMessage("Something went Wrong, Please try Again. ")
+        setShowAlert(true)
+      }
+      
+
+    } catch (error) {
+      setLoading(false);
+      setMessage("Internet Connection not Stable. ");
+      setShowAlert(true);
+    }
+
+    setTimeout(() => {
+      setShowAlert(false);
+    }, 3000);
+
+  };
 
   return (
     <div>
@@ -99,7 +144,7 @@ const gateway = () => {
             <div className="-mx-3 md:flex items-start">
               <div className="px-3 md:w-7/12 md:pr-10">
                 {/* product container  */}
-                {productData.reverse().map((product) => (
+                {productData.map((product) => (
                   <div className="w-full mx-auto text-gray-800 font-light mb-6 border-b border-gray-200 pb-6">
                     <div className="w-full flex items-center">
                       <div className="overflow-hidden rounded-md w-16 h-16 bg-gray-50 border border-gray-200">
@@ -145,70 +190,94 @@ const gateway = () => {
                       <span className="text-gray-600">Total</span>
                     </div>
                     <div className="pl-3">
-                      <span className="font-semibold">Rs {totalPrice + shipingCost}</span>
+                      <span className="font-semibold">
+                        Rs {totalPrice + shipingCost}
+                      </span>
                     </div>
                   </div>
                 </div>
               </div>
 
               {/* gateway form  */}
-              <div className="px-3 md:w-5/12">
-               
+              <form onSubmit={handleSubmit} className="px-3 md:w-5/12">
                 <div className="w-full mx-auto rounded-md bg-white border border-gray-200 text-gray-800 font-light mb-6">
                   <div className="w-full p-3 border-b border-gray-200">
-                   
                     <div>
                       <div className="mb-3">
-                        <label className="text-gray-600 font-semibold text-sm mb-2 ml-1">
+                        <label
+                          htmlFor="phoneNumber"
+                          className="text-gray-600 font-semibold text-sm mb-2 ml-1"
+                        >
                           Phone Number
                         </label>
                         <div>
                           <input
+                            id="phoneNumber"
                             className="w-full px-3 py-2 mb-1 border border-gray-200 rounded-md focus:outline-none focus:border-indigo-500 transition-colors"
                             placeholder="+977-0000000000"
-                            type="number"
+                            type="tel"
+                            pattern="[+]{0,1}[0-9]{1,}[0-9]{5,}"
+                            title="Please enter a valid phone number (e.g. +977-0000000000)"
+                            value={phoneNumber}
+                            onChange={(event) =>
+                              setPhoneNumber(event.target.value)
+                            }
+                            required
                           />
                         </div>
                       </div>
                       <div className="mb-3">
-                        <label className="text-gray-600 font-semibold text-sm mb-2 ml-1">
+                        <label
+                          htmlFor="address"
+                          className="text-gray-600 font-semibold text-sm mb-2 ml-1"
+                        >
                           Address
                         </label>
                         <div>
                           <input
+                            id="address"
                             className="w-full px-3 py-2 mb-1 border border-gray-200 rounded-md focus:outline-none focus:border-indigo-500 transition-colors"
                             placeholder="Address"
                             type="text"
+                            value={address}
+                            onChange={(event) => setAddress(event.target.value)}
+                            required
                           />
                         </div>
                       </div>
-
                       <div className="mb-3">
-                        <label className="text-gray-600 font-semibold text-sm mb-2 ml-1">
-                        Apartment, suite, etc.
+                        <label
+                          htmlFor="apartment"
+                          className="text-gray-600 font-semibold text-sm mb-2 ml-1"
+                        >
+                          Apartment, suite, etc.
                         </label>
                         <div>
                           <input
+                            id="apartment"
                             className="w-full px-3 py-2 mb-1 border border-gray-200 rounded-md focus:outline-none focus:border-indigo-500 transition-colors"
                             placeholder="Apartment, suite, etc."
                             type="text"
+                            value={apartment}
+                            onChange={(event) =>
+                              setApartment(event.target.value)
+                            }
                           />
                         </div>
                       </div>
-                     
                     </div>
                   </div>
-                 
                 </div>
                 <div>
-                  <button className="block w-full max-w-xs mx-auto bg-themecolor text-white rounded-md px-3 py-2 font-semibold">
-                    <i className="mdi mdi-lock-outline mr-1"></i> Cash on Delivery
+                  <button
+                    type="submit"
+                    className="block w-full max-w-xs mx-auto bg-themecolor text-white rounded-md px-3 py-2 font-semibold"
+                  >
+                    <i className="mdi mdi-lock-outline mr-1"></i> Cash on
+                    Delivery
                   </button>
                 </div>
-              </div>
-
-              
-
+              </form>
             </div>
           </div>
         </div>
