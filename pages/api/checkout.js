@@ -22,7 +22,21 @@ export default async function handler(req, res) {
     } catch (error) {
       res.status(500).json({ message: "Server error" });
     }
-  } else {
+  }
+  else if (method == "GET") {
+
+    try {
+
+      const response = await Cart.find()
+      res.status(200).json(response)
+
+    } catch (error) {
+      console.log(`Error from checkout api => ${error}`)
+      res.status(500).json("Enternal Server Error. ")
+    }
+
+  }
+  else {
     res.status(405).json({ message: "Method not Allowed" });
   }
 }
