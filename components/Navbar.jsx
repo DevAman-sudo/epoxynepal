@@ -7,6 +7,13 @@ import Cookies from "js-cookie";
 const Navbar = () => {
   const context = useContext(AppContext)
   const [isOpen, setIsOpen] = useState(false);
+  const [query, setQuery] = useState("")
+
+  function handleSearchChange(event) {
+    const value = event.target.value
+    setQuery(value)
+    context.setQuery(value)
+  }
 
   return (
     <>
@@ -33,6 +40,8 @@ const Navbar = () => {
             name="search"
             id="search"
             placeholder="Search..."
+            value={query}
+            onChange={handleSearchChange}
           />
           <svg
             xmlns="http://www.w3.org/2000/svg"

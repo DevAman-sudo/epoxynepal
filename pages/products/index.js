@@ -1,25 +1,29 @@
-import { Fragment, useState } from "react";
+import { Fragment, useContext, useState } from "react";
 import { Menu, Transition } from "@headlessui/react";
 import Loading from "../../components/Loading.jsx";
 import { useEffect } from "react";
 import axios from "axios";
 import Router from "next/router.js";
 import { ChevronDownIcon, FunnelIcon } from "@heroicons/react/20/solid";
+import AppContext from "../../components/context/AppContext.js";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
 const ProductPage = () => {
+  const context = useContext(AppContext)
   const [loading, setLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(true);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [productData, setProductData] = useState([]);
+  const [data, setData] = useState([])
   const [message, setMessage] = useState("");
   const [showAlert, setShowAlert] = useState(false);
   const [categoryData, setCategoryData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [queryMessage, setQueryMessage] = useState("")
 
   // get products
   const getProducts = async () => {
@@ -36,6 +40,7 @@ const ProductPage = () => {
       setLoading(false);
 
       setProductData(response.data);
+      setData(response.data)
       return response
     
     } catch (error) {
@@ -148,6 +153,20 @@ const ProductPage = () => {
     }
   };
 
+  // handle search filter 
+  useEffect(() => {
+
+    const filteredData = data.filter(item => item.name.includes(context.query));
+    if(filteredData.length == 0) {
+      setQueryMessage("Product not Found. ")
+      setProductData([])
+    } else {
+      setQueryMessage(context.query)
+      setProductData(filteredData)
+    }
+
+  }, [context.query]);
+
   return (
     <div className="bg-white">
       {/* loading page  */}
@@ -180,7 +199,10 @@ const ProductPage = () => {
 
       <div>
         <main className="mx-auto max-w-7xl px-4 sm:px-6 md:px-8">
-          <div className="flex items-baseline justify-between border-b border-gray-200 pt-24 pb-6">
+
+        <p className="text-xl font-400 text-grey-500 tracking-wider mt-2">Search Query: {queryMessage}</p>
+
+          <div className="flex items-baseline justify-between border-b border-gray-200 pt-8 pb-6">
             <h1 className="text-4xl font-bold tracking-tight text-gray-900">
               New Arrivals
             </h1>

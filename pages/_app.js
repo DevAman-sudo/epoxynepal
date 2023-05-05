@@ -6,6 +6,7 @@ import "../styles/globals.css";
 function MyApp({ Component, pageProps }) {
   const [cartNumber, setCartNumber] = useState(0);
   const [productData, setProductData] = useState([]);
+  const [query, setQuery] = useState("")
 
   // Retrieve the stored cart number from local storage on component mount
   useEffect(() => {
@@ -37,11 +38,11 @@ function MyApp({ Component, pageProps }) {
 
   return (
     <AppContext.Provider
-      value={{ cartNumber, setCartNumber, productData, setProductData }}
+      value={{ cartNumber, setCartNumber, productData, setProductData, query, setQuery }}
     >
-      <Layout>
-        <Component {...pageProps} />
-      </Layout>
+        <Layout>
+          <Component {...pageProps} />
+        </Layout>
     </AppContext.Provider>
   );
 }
