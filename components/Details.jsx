@@ -26,7 +26,7 @@ const Details = () => {
                 <div className="relative">
                   <img
                     src={info.img}
-                    className="w-full relative z-50"
+                    className="w-full relative"
                     alt=""
                   />
                   <div className="border-4 border-themecolor absolute top-10 bottom-10 left-10 right-10 z-0"></div>
@@ -60,8 +60,6 @@ const Details = () => {
             </div>
           </div>
         </div>
-
-     
       </div>
     </div>
   );

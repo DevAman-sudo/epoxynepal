@@ -2,7 +2,7 @@ import React from "react";
 
 const Loading = () => {
   return (
-    <div className="fixed top-0 left-0 w-screen h-screen">
+    <div className="fixed top-0 left-0 w-screen h-screen z-20">
       <div className="flex md:flex-row flex-xol flex-wrap justify-center items-center bg-white h-screen sm:px-6 lg:px-8">
         <div className="w-full sm:w-80 bg-white rounded-md shadow-xl m-3">
           <div className="h-44 bg-gray-300 rounded-t-md animate-pulse"></div>

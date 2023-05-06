@@ -27,13 +27,12 @@ const Navbar = () => {
 
       {/* Navbar */}
       <nav
-        className={`${styles.nav}
-        mb-16 md:mb-0 w-full md:border-b border-grey-400 mr flex justify-between px-8 md:px-20 py-7 items-center bg-white z-501`}
+        className={`${styles.nav} z-10 sticky top-0 mb-16 md:mb-0 w-full md:border-b border-grey-400 mr flex justify-between px-8 md:px-20 py-7 items-center bg-white z-501`}
       >
         {/* search box */}
         <div
           className={`${styles.searchbox}
-          w-[95%] md:w-[25%] flex absolute top-32 left-1/2 transform -translate-x-1/2 md:static md:top-0 md:-translate-x-0 border border-grey-400 md:flex justify-between align-center p-3`}
+          w-[95%] md:w-[25%] bg-white flex absolute top-24 left-1/2 transform -translate-x-1/2 md:static md:top-0 md:-translate-x-0 border border-grey-400 md:flex justify-between align-center p-3`}
         >
           <input
             className="ml-2 outline-none bg-transparent font-"
@@ -122,7 +121,7 @@ const Navbar = () => {
         leaveTo="opacity-0"
       >
         <div className="md:block md:mt-0">
-          <ul className="bg-white shadow-md transform translate-y-2 md:flex absolute md:relative top-[15%] right-[0%] h-full w-[80%] ml-[10%]  justify-evenly flex-col p-4 mt-4 border border-gray-100 md:flex-row md:space-x-8 md:mt-0 md:text-sm md:font-medium md:border-0 md:bg-white">
+          <ul className="z-20 bg-milky shadow-md transform translate-y-2 md:flex absolute md:relative top-[15%] right-[0%] h-full w-[80%] ml-[10%]  justify-evenly flex-col p-4 mt-4 border border-gray-100 md:flex-row md:space-x-8 md:mt-0 md:text-sm md:font-medium md:border-0 md:bg-white">
             <NavLinks />
             <li>
               <div className="flex mt-16 md:hidden justify-center mb-6">

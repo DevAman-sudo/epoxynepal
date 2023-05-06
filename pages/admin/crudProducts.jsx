@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import Router from "next/router";
 import Cookies from "js-cookie";
 import Loading from "../../components/Loading";
 import axios from "axios";
+import AppContext from "../../components/context/AppContext";
 
 const crudProducts = () => {
+  const context = useContext(AppContext)
   const [loading, setLoading] = useState(true);
   const [productName, setProductName] = useState("");
   const [productDescription, setProductDescription] = useState("");
@@ -17,6 +19,8 @@ const crudProducts = () => {
   const [productData, setProductData] = useState([]);
   const [categoryData, setCategoryData] = useState([]);
   const [updateCategory, setUpdateCategory] = useState("");
+  const [data, setData] = useState([]);
+  const [queryMessage, setQueryMessage] = useState("");
 
   // Check authentication
   useEffect(() => {
@@ -186,6 +190,7 @@ const crudProducts = () => {
   const getProducts = async () => {
     const productData = await axios.get("/api/admin/products");
     setProductData(productData.data);
+    setData(productData.data)
 
     // set message
     setMessage(productData.data.message);
@@ -222,6 +227,20 @@ const crudProducts = () => {
       setShowAlert(false);
     }, 3000);
   };
+
+  // handle search query 
+  useEffect(() => {
+    const filteredData = data.filter((item) =>
+      item.name.toLowerCase().includes(context.query.toLowerCase())
+    );
+
+    if (filteredData.length == 0) {
+      setQueryMessage("Users not Found");
+    } else {
+      setQueryMessage(context.query);
+    }
+    setProductData(filteredData);
+  }, [context.query]);
 
   return (
     <div>
