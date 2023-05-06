@@ -3,9 +3,11 @@ import { useState, useEffect } from "react";
 import Cookies from "js-cookie";
 import Loading from "../../components/Loading";
 import axios from "axios";
+import { CircularProgress } from "@material-ui/core";
 
 const profile = () => {
   const [loading, setLoading] = useState(true);
+  const [circleLoading, setCircleLoading] = useState(true);
 
   // verify user
   async function getAuth() {
@@ -45,7 +47,7 @@ const profile = () => {
   const [message, setMessage] = useState("");
   const [showAlert, setShowAlert] = useState(false);
   const [cartData, setCartData] = useState([]);
-  const [userData, setUserData] = useState([])
+  const [userData, setUserData] = useState([]);
   const userID = router.query.userId;
 
   useEffect(() => {
@@ -81,7 +83,8 @@ const profile = () => {
     try {
       const response = await axios.get("/api/checkout");
       setCartData(response.data[0].cartItems);
-      setUserData(response.data[0])
+      setUserData(response.data[0]);
+      setCircleLoading(false);
 
       setLoading(false);
     } catch (error) {
@@ -89,6 +92,7 @@ const profile = () => {
       setMessage("Internet Connection not Stable. ");
       setShowAlert(true);
       setLoading(false);
+      setCircleLoading(false);
     }
 
     setTimeout(() => {
@@ -115,8 +119,6 @@ const profile = () => {
 
     return () => clearTimeout(timeoutId);
   }, []);
-
-  
 
   return (
     <div className="my-8">
@@ -167,83 +169,97 @@ const profile = () => {
           <p className="text-gray-600 tracking-wider my-1">{userId}</p>
           <p className="text-gray-600 tracking-wider my-1">{userName}</p>
           <p className="text-gray-600 tracking-wider my-1">{userEmail}</p>
-          <p className="text-gray-600 tracking-wider my-1">{userData.address}</p>
-          <p className="text-gray-600 tracking-wider my-1">{userData.apartment}</p>
+          <p className="text-gray-600 tracking-wider my-1">
+            {userData.address}
+          </p>
+          <p className="text-gray-600 tracking-wider my-1">
+            {userData.apartment}
+          </p>
         </div>
         {/* order history   */}
-        <div className="mt-8 md:mt-0">
-          <h1 className="text-2xl tracking-widest my-1">Order History</h1>
+        {loading ? (
+          <CircularProgress color="primary" />
+        ) : (
+          <div className="mt-8 md:mt-0">
+            <h1 className="text-2xl tracking-widest my-1">Order History</h1>
 
-          {!cartData ? (
-            <p className="text-gray-600 tracking-wider my-1">
-              You haven't placed any orders yet.
-            </p>
-          ) : (
-            <div className="flex flex-col mt-4">
-              <div className="overflow-x-auto sm:-mx-6 lg:-mx-8">
-                <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
-                  <div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
-                    <table className="min-w-full divide-y divide-gray-200">
-                      <thead className="bg-gray-50">
-                        <tr>
-                          <th
-                            scope="col"
-                            className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                          >
-                            Image
-                          </th>
-                          <th
-                            scope="col"
-                            className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                          >
-                            Quantity
-                          </th>
-                          <th
-                            scope="col"
-                            className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                          >
-                            Total Amount
-                          </th>
-                          <th
-                            scope="col"
-                            className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                          >
-                            Status
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody className="bg-white divide-y divide-gray-200">
-                        {cartData.map((order) => (
-                          <tr key={order._id}>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <img className="md:w-12 md:h-auto" src={order.image} alt="img" />
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm text-gray-500">
-                                {order.num}
-                              </div>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm text-gray-900">
-                                {order.price * order.num}
-                              </div>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm text-gray-900">
-                                Preparing ...
-                              </div>
-                            </td>
+            {!cartData ? (
+              <p className="text-gray-600 tracking-wider my-1">
+                You haven't placed any orders yet.
+              </p>
+            ) : (
+              <div className="flex flex-col mt-4">
+                <div className="overflow-x-auto sm:-mx-6 lg:-mx-8">
+                  <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
+                    <div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
+                      <table className="min-w-full divide-y divide-gray-200">
+                        <thead className="bg-gray-50">
+                          <tr>
+                            <th
+                              scope="col"
+                              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                            >
+                              Image
+                            </th>
+                            <th
+                              scope="col"
+                              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                            >
+                              Quantity
+                            </th>
+                            <th
+                              scope="col"
+                              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                            >
+                              Total Amount
+                            </th>
+                            <th
+                              scope="col"
+                              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                            >
+                              Status
+                            </th>
                           </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                    <p className=" text-gray-500 tracking-wider ">note: dilivery cost will be added</p>
+                        </thead>
+                        <tbody className="bg-white divide-y divide-gray-200">
+                          {cartData.map((order) => (
+                            <tr key={order._id}>
+                              <td className="px-6 py-4 whitespace-nowrap">
+                                <img
+                                  className="md:w-12 md:h-auto"
+                                  src={order.image}
+                                  alt="img"
+                                />
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap">
+                                <div className="text-sm text-gray-500">
+                                  {order.num}
+                                </div>
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap">
+                                <div className="text-sm text-gray-900">
+                                  {order.price * order.num}
+                                </div>
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap">
+                                <div className="text-sm text-gray-900">
+                                  Preparing ...
+                                </div>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                      <p className=" text-gray-500 tracking-wider ">
+                        note: dilivery cost will be added
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          )}
-        </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

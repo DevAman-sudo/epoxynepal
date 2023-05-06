@@ -3,16 +3,17 @@ import styles from "../styles/Navbar.module.css";
 import { Transition } from "@headlessui/react";
 import AppContext from "./context/AppContext";
 import Cookies from "js-cookie";
+import NavLinks from "./NavLinks";
 
 const Navbar = () => {
-  const context = useContext(AppContext)
+  const context = useContext(AppContext);
   const [isOpen, setIsOpen] = useState(false);
-  const [query, setQuery] = useState("")
+  const [query, setQuery] = useState("");
 
   function handleSearchChange(event) {
-    const value = event.target.value
-    setQuery(value)
-    context.setQuery(value)
+    const value = event.target.value;
+    setQuery(value);
+    context.setQuery(value);
   }
 
   return (
@@ -122,51 +123,7 @@ const Navbar = () => {
       >
         <div className="md:block md:mt-0">
           <ul className="bg-white shadow-md transform translate-y-2 md:flex absolute md:relative top-[15%] right-[0%] h-full w-[80%] ml-[10%]  justify-evenly flex-col p-4 mt-4 border border-gray-100 md:flex-row md:space-x-8 md:mt-0 md:text-sm md:font-medium md:border-0 md:bg-white">
-            <li className="mt-4 md:mt-0 border-b text-themecolor border-gray-400 md:border-none pb-2 md:pb-0">
-              <a className={styles.menuItems} href="/" aria-current="page">
-                Home
-              </a>
-            </li>
-            <li className="mt-4 md:mt-0 border-b text-themecolor border-gray-400 md:border-none pb-2 md:pb-0">
-              <a
-                className={styles.menuItems}
-                href="/products"
-                aria-current="page"
-              >
-                Shop
-              </a>
-            </li>
-            <li className="mt-4 md:mt-0 border-b text-themecolor border-gray-400 md:border-none pb-2 md:pb-0">
-              <a className={styles.menuItems} href="/story" aria-current="page">
-                Our Story
-              </a>
-            </li>
-
-            <li className="mt-4 md:mt-0 border-b border-gray-400 md:border-none pb-2 md:pb-0">
-              <a
-                className={styles.menuItems}
-                href="/contact"
-                aria-current="page"
-              >
-                Contact
-              </a>
-            </li>
-
-            <li className="mt-4 md:mt-0 border-b border-gray-400 md:border-none pb-2 md:pb-0">
-              <a className={styles.menuItems} href="/login" aria-current="page">
-                Login
-              </a>
-            </li>
-
-            <li className="mt-4 md:mt-0 border-b border-gray-400 md:border-none pb-2 md:pb-0">
-              <a
-                className={styles.menuItems}
-                href="/signup"
-                aria-current="page"
-              >
-                SignUp
-              </a>
-            </li>
+            <NavLinks />
             <li>
               <div className="flex mt-16 md:hidden justify-center mb-6">
                 <a

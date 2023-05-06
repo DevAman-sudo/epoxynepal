@@ -151,15 +151,14 @@ const ProductPage = () => {
   // handle search filter
   useEffect(() => {
     const filteredData = data.filter((item) =>
-      item.name.includes(context.query)
+      item.name.toLowerCase().includes(context.query.toLowerCase())
     );
-    if (filteredData.length == 0) {
-      setQueryMessage("Product not Found. ");
-      setProductData([]);
+    if (filteredData.length === 0) {
+      setQueryMessage("Product not found.");
     } else {
       setQueryMessage(context.query);
-      setProductData(filteredData);
     }
+    setProductData(filteredData);
   }, [context.query]);
 
   return (
@@ -342,7 +341,7 @@ const ProductPage = () => {
                         </div>
                         <div className="w-40 m-2 flex flex-col-reverse justify-end">
                           <h2 className={` m-0.5 `}>
-                            <span className="text-sm">Rs{" "}</span>
+                            <span className="text-sm">Rs </span>
                             <span className="text-xl font-500 text-green-900 tracking-wider">
                               {product.price}{" "}
                             </span>
