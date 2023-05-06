@@ -12,18 +12,18 @@ function classNames(...classes) {
 }
 
 const ProductPage = () => {
-  const context = useContext(AppContext)
+  const context = useContext(AppContext);
   const [loading, setLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(true);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [productData, setProductData] = useState([]);
-  const [data, setData] = useState([])
+  const [data, setData] = useState([]);
   const [message, setMessage] = useState("");
   const [showAlert, setShowAlert] = useState(false);
   const [categoryData, setCategoryData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [queryMessage, setQueryMessage] = useState("")
+  const [queryMessage, setQueryMessage] = useState("");
 
   // get products
   const getProducts = async () => {
@@ -40,9 +40,8 @@ const ProductPage = () => {
       setLoading(false);
 
       setProductData(response.data);
-      setData(response.data)
-      return response
-    
+      setData(response.data);
+      return response;
     } catch (error) {
       setLoading(false);
       setMessage("Internet connection not Stable. ");
@@ -87,7 +86,6 @@ const ProductPage = () => {
       );
 
       setProductData(filteredData);
-
     } catch (error) {
       setLoading(false);
       setMessage("Internet connection not Stable. ");
@@ -117,54 +115,51 @@ const ProductPage = () => {
   // get newset Products
   const getNewest = async () => {
     try {
-      const response = await axios.get(`/api/admin/products`)
-      const data = response.data.slice(-10).reverse()
-      setProductData(data)
-      setMobileFiltersOpen(false)
-      
+      const response = await axios.get(`/api/admin/products`);
+      const data = response.data.slice(-10).reverse();
+      setProductData(data);
+      setMobileFiltersOpen(false);
     } catch (error) {
       console.error("Failed to get newest products:", error);
     }
   };
 
-    // get price low to high
+  // get price low to high
   const getPriceLow = async () => {
     try {
-      const response = await axios.get(`/api/admin/products`)
+      const response = await axios.get(`/api/admin/products`);
       const sortedData = response.data.sort((a, b) => a.price - b.price);
-      setProductData(sortedData)
-      setMobileFiltersOpen(false)
-      
+      setProductData(sortedData);
+      setMobileFiltersOpen(false);
     } catch (error) {
       console.error("Failed to get newest products:", error);
     }
   };
 
-   // get price high to low
+  // get price high to low
   const getPriceHigh = async () => {
     try {
-      const response = await axios.get(`/api/admin/products`)
+      const response = await axios.get(`/api/admin/products`);
       const sortedData = response.data.sort((a, b) => b.price - a.price);
-      setProductData(sortedData)
-      setMobileFiltersOpen(false)
-      
+      setProductData(sortedData);
+      setMobileFiltersOpen(false);
     } catch (error) {
       console.error("Failed to get newest products:", error);
     }
   };
 
-  // handle search filter 
+  // handle search filter
   useEffect(() => {
-
-    const filteredData = data.filter(item => item.name.includes(context.query));
-    if(filteredData.length == 0) {
-      setQueryMessage("Product not Found. ")
-      setProductData([])
+    const filteredData = data.filter((item) =>
+      item.name.includes(context.query)
+    );
+    if (filteredData.length == 0) {
+      setQueryMessage("Product not Found. ");
+      setProductData([]);
     } else {
-      setQueryMessage(context.query)
-      setProductData(filteredData)
+      setQueryMessage(context.query);
+      setProductData(filteredData);
     }
-
   }, [context.query]);
 
   return (
@@ -199,8 +194,9 @@ const ProductPage = () => {
 
       <div>
         <main className="mx-auto max-w-7xl px-4 sm:px-6 md:px-8">
-
-        <p className="text-xl font-400 text-grey-500 tracking-wider mt-2">Search Query: {queryMessage}</p>
+          <p className="text-xl font-400 text-grey-500 tracking-wider mt-2">
+            Search Query: {queryMessage}
+          </p>
 
           <div className="flex items-baseline justify-between border-b border-gray-200 pt-8 pb-6">
             <h1 className="text-4xl font-bold tracking-tight text-gray-900">
@@ -245,7 +241,7 @@ const ProductPage = () => {
                       <a
                         href="#"
                         className="font-medium text-gray-90 bg-gray-100 block px-4 py-2 text-sm"
-                         onClick={getPriceLow}
+                        onClick={getPriceLow}
                       >
                         Price: Low to High
                       </a>
@@ -326,9 +322,9 @@ const ProductPage = () => {
                   .map((product) => (
                     <a
                       onClick={() => showDetails(product._id)}
-                      className="flex flex-wrap"
+                      className="flex flex-wrap cursor-pointer"
                     >
-                      <div className="p-2 w-36 md:w-52 max-h-68 m-1 md:p-1 bg-milky flex flex-col justify-between">
+                      <div className="p-2 w-36 md:w-52 max-h-68 m-1 md:p-1 bg-milky flex flex-col justify-between  hover:bg-gray-200 transition duration-300 ease-in-out transform-gpu hover:scale-105">
                         <div>
                           <img
                             className="ml-[70%] w-10 h-10 bg-themecolor rounded-full p-2 mt-2"
@@ -344,13 +340,15 @@ const ProductPage = () => {
                             alt="epoxy products"
                           />
                         </div>
-                        <div className="w-24 md:w-36 m-4">
-                          <h2 className="m-0.5 text-gray-600 text-sm font-bold capitalize">
-                            {product.name}
+                        <div className="w-40 m-2 flex flex-col-reverse justify-end">
+                          <h2 className={` m-0.5 `}>
+                            <span className="text-sm">Rs{" "}</span>
+                            <span className="text-xl font-500 text-green-900 tracking-wider">
+                              {product.price}{" "}
+                            </span>
                           </h2>
-
-                          <h2 className="m-0.5 font-bold">
-                            Rs {product.price}
+                          <h2 className="m-0.5 text-gray-600 font-900 tracking-widest capitalize text-xl">
+                            {product.name}
                           </h2>
                         </div>
                       </div>

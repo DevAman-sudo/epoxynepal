@@ -10,19 +10,12 @@ const Products = () => {
           <h1 className="mt-auto font-bold float-left m-4 text-3xl">
             Our Products
           </h1>
-          <p className=" mt-auto font-bold ml-auto m-4 underline">view all</p>
+          <a href="/products" className="ml-auto mt-auto m-4">
+            <p className="font-bold underline">view all</p>
+          </a>
         </div>
 
         <div className={styles.productContainer}>
-          <Card />
-          <Card />
-          <Card />
-          <Card />
-          <Card />
-          <Card />
-          <Card />
-          <Card />
-          <Card />
           <Card />
         </div>
       </div>
