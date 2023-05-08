@@ -36,9 +36,10 @@ function MyApp({ Component, pageProps }) {
     setCartNumber(productData.length); // set cartNumber to the amount of data present in productData
   }, [productData]);
 
+
   return (
     <AppContext.Provider
-      value={{ cartNumber, setCartNumber, productData, setProductData, query, setQuery }}
+      value={{ cartNumber, setCartNumber, productData, setProductData, query, setQuery}}
     >
         <Layout>
           <Component {...pageProps} />

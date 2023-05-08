@@ -104,6 +104,26 @@ const NavLinks = () => {
             Users
           </a>
         </li>
+
+        <li className="mt-4 md:mt-0 border-b border-gray-400 md:border-none pb-2 md:pb-0">
+          <a
+            className={styles.menuItems}
+            href="/admin/alert"
+            aria-current="page"
+          >
+            Alert
+          </a>
+        </li>
+
+        <li className="mt-4 md:mt-0 border-b border-gray-400 md:border-none pb-2 md:pb-0">
+          <a
+            className={styles.menuItems}
+            href="/admin/tranding"
+            aria-current="page"
+          >
+            Tranding
+          </a>
+        </li>
       </>
     );
   } else {

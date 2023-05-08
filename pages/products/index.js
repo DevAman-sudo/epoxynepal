@@ -150,9 +150,11 @@ const ProductPage = () => {
 
   // handle search filter
   useEffect(() => {
+    const tranding = context.tranding;
     const filteredData = data.filter((item) =>
       item.name.toLowerCase().includes(context.query.toLowerCase())
     );
+    
     if (filteredData.length === 0) {
       setQueryMessage("Product not found.");
     } else {

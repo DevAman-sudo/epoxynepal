@@ -4,11 +4,26 @@ import { Transition } from "@headlessui/react";
 import AppContext from "./context/AppContext";
 import Cookies from "js-cookie";
 import NavLinks from "./NavLinks";
+import axios from "axios";
 
 const Navbar = () => {
   const context = useContext(AppContext);
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState("");
+  const [alertMessage, setAlertMessage] = useState("");
+
+  // get alert message
+  const alert = async () => {
+    try {
+      const response = await axios.get("/api/admin/alert");
+      setAlertMessage(response.data.data[0].alert);
+    } catch (error) {
+      setAlertMessage("Something went Wrong. ");
+    }
+  };
+  useEffect(() => {
+    alert();
+  }, []);
 
   function handleSearchChange(event) {
     const value = event.target.value;
@@ -20,9 +35,7 @@ const Navbar = () => {
     <>
       {/* alert box */}
       <div className={`${styles.alert} bg-themecolor text-white px-4 py-2`}>
-        <p className="animate-pulse font-bold tracking-wider">
-          Free dilivery on above 15k
-        </p>
+        <p className="animate-pulse font-bold tracking-wider">{alertMessage}</p>
       </div>
 
       {/* Navbar */}
@@ -102,7 +115,12 @@ const Navbar = () => {
                 {context.cartNumber}
               </span>
             </a>
-            <a onClick={() => setIsOpen(!isOpen)}>
+            <a
+              onClick={() => {
+                setIsOpen(!isOpen);
+                window.scrollTo(0, 0);
+              }}
+            >
               <img src="/img/menu.png" className="w-8" alt="menu" />
             </a>
           </ul>
