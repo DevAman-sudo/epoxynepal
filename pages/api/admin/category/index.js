@@ -7,7 +7,8 @@ export default async function handler(req, res) {
   });
 
   const { method } = req;
-  const { updateCategory } = req.body;
+  const updateCategory = req.body.updateCategory;
+  const image = req.body.url;
 
   //   get method
   if (method == "GET") {
@@ -35,6 +36,7 @@ export default async function handler(req, res) {
 
       const category = new Category({
         category: updateCategory,
+        image: image
       });
 
       const savedCategory = await category.save();

@@ -3,7 +3,7 @@ import { Menu, Transition } from "@headlessui/react";
 import Loading from "../../components/Loading.jsx";
 import { useEffect } from "react";
 import axios from "axios";
-import Router from "next/router.js";
+import Router, { useRouter } from "next/router.js";
 import { ChevronDownIcon, FunnelIcon } from "@heroicons/react/20/solid";
 import AppContext from "../../components/context/AppContext.js";
 
@@ -12,6 +12,7 @@ function classNames(...classes) {
 }
 
 const ProductPage = () => {
+  const router = useRouter()
   const context = useContext(AppContext);
   const [loading, setLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(true);
@@ -82,7 +83,7 @@ const ProductPage = () => {
       const data = await getProducts();
 
       const filteredData = data.data.filter(
-        (item) => item.category == category
+        (item) => item.category.toLowerCase() == category.toLowerCase()
       );
 
       setProductData(filteredData);
@@ -111,6 +112,15 @@ const ProductPage = () => {
       setShowAlert(false);
     }, 3000);
   };
+
+  // category search filter redirected from home 
+  const { category } = router.query;
+  useEffect(() => {
+    if (category) {
+     handleCategorySearch(category)
+    }
+  }, [category]);
+
 
   // get newset Products
   const getNewest = async () => {
@@ -150,7 +160,6 @@ const ProductPage = () => {
 
   // handle search filter
   useEffect(() => {
-    const tranding = context.tranding;
     const filteredData = data.filter((item) =>
       item.name.toLowerCase().includes(context.query.toLowerCase())
     );
@@ -344,11 +353,11 @@ const ProductPage = () => {
                         <div className="w-40 m-2 flex flex-col-reverse justify-end">
                           <h2 className={` m-0.5 `}>
                             <span className="text-sm">Rs </span>
-                            <span className="text-xl font-500 text-green-900 tracking-wider">
+                            <span className="text-lg font-500 text-green-900 tracking-wider whitespace-normal">
                               {product.price}{" "}
                             </span>
                           </h2>
-                          <h2 className="m-0.5 text-gray-600 font-900 tracking-widest capitalize text-xl">
+                          <h2 className="m-0.5 text-gray-600 font-900 tracking-widest capitalize text-base">
                             {product.name}
                           </h2>
                         </div>

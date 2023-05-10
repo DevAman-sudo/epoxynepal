@@ -118,31 +118,6 @@ const crudProducts = () => {
     }
   };
 
-  // handle form category
-  const handleCategory = async (event) => {
-    event.preventDefault();
-    setLoading(true);
-
-    try {
-      const data = { updateCategory };
-
-      const response = await axios.post("/api/admin/category", data);
-      setLoading(false);
-      setMessage(response.data.message);
-      setShowAlert(true);
-      setUpdateCategory("");
-    } catch (error) {
-      setLoading(false);
-      setMessage("Something Went Wrong, PLease try Again. ");
-      setShowAlert(true);
-      setUpdateCategory("");
-    }
-
-    setTimeout(() => {
-      setShowAlert(false);
-    }, 3000);
-  };
-
   // get category
   const getCategory = async () => {
     try {
@@ -160,32 +135,7 @@ const crudProducts = () => {
     getCategory();
   }, []);
 
-  // Delete category
-  const deleteCategory = async (Id) => {
-    setLoading(true);
-
-    try {
-      const response = await axios.delete(
-        `/api/admin/category?id=${Id}`
-      );
-      setLoading(false);
-      setMessage(response.data.message);
-      setShowAlert(true);
-      getCategory();
-
-    } catch (error) {
-
-      console.log(error)
-      setLoading(false);
-      setMessage("Something went Wrong, Please Try Again. ");
-      setShowAlert(true);
-    }
-
-    setTimeout(() => {
-      setShowAlert(false);
-    }, 3000);
-  };
-
+ 
   // get products
   const getProducts = async () => {
     const productData = await axios.get("/api/admin/products");
@@ -393,69 +343,6 @@ const crudProducts = () => {
                 </button>
               </div>
             </form>
-          </div>
-        </div>
-
-        {/* category form  */}
-        <div className="flex justify-center border border-b-2 m-2 p-2">
-          <div className="max-w-md w-full">
-            <h2 className="text-xl font-bold mb-4 text-center">Add Category</h2>
-            <form className="space-y-6" onSubmit={handleCategory}>
-              <div>
-                <label
-                  className="block text-gray-700 font-bold mb-2"
-                  htmlFor="name"
-                >
-                  Add Category
-                </label>
-                <input
-                  className="block w-full px-4 py-2 border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                  id="name"
-                  type="text"
-                  placeholder="Add Category"
-                  value={updateCategory}
-                  onChange={(e) => setUpdateCategory(e.target.value)}
-                  required
-                />
-              </div>
-              <div className="flex justify-end">
-                <button
-                  type="submit"
-                  className="inline-flex justify-center w-full sm:w-auto px-4 py-2 bg-blue-500 border border-transparent rounded-md shadow-sm text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:text-sm"
-                >
-                  Add Category
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-
-        {/* delete category  */}
-        <div className="my-8">
-          <h2 className="text-xl font-bold mb-4">Category List</h2>
-          <div className="overflow-x-auto">
-            <table className="table-auto border-collapse w-full">
-              <thead>
-                <tr>
-                  <th className="px-4 py-2 font-bold text-left">Category</th>
-                </tr>
-              </thead>
-              <tbody>
-                {categoryData.map((category, index) => (
-                  <tr>
-                    <td className="border px-4 py-2">{category.category}</td>
-                    <td className="border px-4 py-2">
-                      <button
-                        className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-                        onClick={() => deleteCategory(category._id)}
-                      >
-                        Delete
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
           </div>
         </div>
 

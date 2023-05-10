@@ -40,7 +40,7 @@ const Navbar = () => {
 
       {/* Navbar */}
       <nav
-        className={`${styles.nav} z-10 sticky top-0 mb-16 md:mb-0 w-full md:border-b border-grey-400 mr flex justify-between px-8 md:px-20 py-7 items-center bg-white z-501`}
+        className={`${styles.nav} shadow-lg z-10 sticky top-0 mb-16 md:mb-0 w-full md:border-b border-grey-400 mr flex justify-between px-8 md:px-20 py-7 items-center bg-white z-501`}
       >
         {/* search box */}
         <div

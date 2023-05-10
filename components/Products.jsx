@@ -15,7 +15,7 @@ const Products = () => {
           </a>
         </div>
 
-        <div className={styles.productContainer}>
+        <div className={`${styles.productContainer} flex items-center justify-center`}>
           <Card />
         </div>
       </div>
