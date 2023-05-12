@@ -3,14 +3,17 @@ import axios from "axios";
 
 const Categorize = () => {
   const [categoryData, setCategoryData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   // get category
   const getCategory = async () => {
     try {
       const categoryDatas = await axios.get("/api/admin/category");
       setCategoryData(categoryDatas.data);
+      setIsLoading(false);
     } catch (error) {
       console.log(error);
+      setIsLoading(false);
     }
   };
   useEffect(() => {

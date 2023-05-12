@@ -8,8 +8,8 @@ export default async function handler(req, res) {
   });
 
   const { method } = req;
-  const startDate = moment().startOf('week').toISOString();
-  const endDate = moment().endOf('week').toISOString();
+  const startDate = moment().startOf("week").toISOString();
+  const endDate = moment().endOf("week").toISOString();
 
   //   get method
   if (method == "GET") {
@@ -20,15 +20,10 @@ export default async function handler(req, res) {
           $gte: new Date(startDate),
           $lte: new Date(endDate),
         },
-      })
+      });
 
-      if (!signups) {
-        // Return a 404 error if user is not found
-        res.status(404).json({ message: "User not found" });
-      } else {
-        // Return the user as a JSON response
-        res.status(200).json({signups});
-      }
+      // Return the user as a JSON response
+      res.status(200).json({ signups });
     } catch (error) {
       // Return a 500 error if there's a server error
       res.status(500).json({ message: "Server error" });

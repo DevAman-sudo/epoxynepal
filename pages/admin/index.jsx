@@ -1,6 +1,7 @@
 import Cookies from "js-cookie";
 import Router from "next/router";
 import React from "react";
+import axios from "axios";
 import { useState, useEffect } from "react";
 
 import Loading from "../../components/Loading";
@@ -63,9 +64,15 @@ const admin = () => {
 
   // set weekely signups
   useEffect(() => {
-    fetch("/api/admin/signups")
-      .then((res) => res.json())
-      .then((data) => setSignups(data.signups));
+    const getSignups = async () => {
+      try {
+        const res = await axios.get("/api/admin/signups");
+        setSignups(res.data.signups);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    getSignups();
   }, []);
 
   return (

@@ -3,14 +3,17 @@ import axios from "axios";
 
 const ShopByArt = () => {
   const [categoryData, setCategoryData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   // get category
   const getCategory = async () => {
     try {
       const categoryDatas = await axios.get("/api/admin/projects");
       setCategoryData(categoryDatas.data);
+      setIsLoading(false);
     } catch (error) {
       console.log(error);
+      setIsLoading(false);
     }
   };
   useEffect(() => {
@@ -25,9 +28,13 @@ const ShopByArt = () => {
         </h1>
       </div>
 
-      <div className="flex justify-left overflow-scroll">
-        {categoryData.map((category, index) => (
-          
+      {isLoading ? (
+        <div className="flex justify-center items-center h-screen">
+          <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-purple-500"></div>
+        </div>
+      ) : (
+        <div className="flex justify-left overflow-scroll">
+          {categoryData.map((category, index) => (
             <div key={index} className=" shadow-md m-2 p-4 rounded-md">
               <div className="w-24 h-24 md:w-40 md:h-40  mx-auto overflow-hidden">
                 <img
@@ -42,8 +49,9 @@ const ShopByArt = () => {
                 </h2>
               </div>
             </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
