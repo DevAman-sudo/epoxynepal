@@ -12,6 +12,10 @@ const cartSchema = new mongoose.Schema({
         type: mongoose.Types.ObjectId,
         required: true
       },
+
+      username: {
+        type: String,
+      },
       name: {
         type: String,
         required: true
@@ -34,6 +38,10 @@ const cartSchema = new mongoose.Schema({
       num: {
         type: Number,
         default: 1
+      },
+      createdAt: {
+        type: Date,
+        default: Date.now
       }
     }
   ],
@@ -47,6 +55,10 @@ const cartSchema = new mongoose.Schema({
   },
   apartment: {
     type: String
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now
   }
 });
 

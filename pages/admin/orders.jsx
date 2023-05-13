@@ -2,9 +2,16 @@ import React, { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import axios from "axios";
 import { format } from "date-fns";
+import Loading from "../../components/Loading";
+import { useRouter } from "next/router";
+import Router from "next/router";
 
 const Orders = () => {
+  const router = useRouter();
   const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const userID = Cookies.get("user_id");
 
   // Check authentication
   useEffect(() => {
@@ -17,11 +24,45 @@ const Orders = () => {
     }
   }, []);
 
+  // get users
+  const getUsers = async () => {
+    const userData = await axios.get("/api/admin");
+    return userData
+  };
+
+
   // Fetch orders from backend API
   const fetchOrders = async () => {
     try {
       const response = await axios.get("/api/checkout");
-      setOrders(response.data);
+
+      const userData = await getUsers()
+      const data = userData.data
+      const filteredData = data.filter(item => item._id === response.data[0].userId)
+      const username = filteredData[0].name
+
+      const ordersWithUsername = response.data.map(order => ({
+        ...order,
+        username
+      }));
+
+      setOrders(ordersWithUsername);
+      console.log(ordersWithUsername)
+      setLoading(false);
+    } catch (error) {
+      console.log(error);
+      setLoading(false);
+    }
+  };
+
+  // Update order status
+  const updateOrderStatus = async (orderId, status) => {
+    console.log(orderId, status);
+    try {
+      const response = await axios.put(`/api/checkout/${orderId}`, { status });
+      // fetchOrders();
+      console.log(response);
+      console.log(orderId);
     } catch (error) {
       console.log(error);
     }
@@ -29,6 +70,9 @@ const Orders = () => {
 
   return (
     <>
+      {/* loading page  */}
+      {loading ? <Loading /> : null}
+
       <div className="container mx-auto p-4">
         <h1 className="text-2xl font-bold mb-4">Order Tracking</h1>
         <div className="flex flex-wrap -mx-4 mb-8">
@@ -45,23 +89,10 @@ const Orders = () => {
                     Customer Name:
                   </span>
                   <span className="ml-auto text-sm font-medium text-gray-800">
-                    {order.cartItems[0].name}
+                    {order.username}
                   </span>
                 </div>
-                <div className="flex items-center mb-2">
-                  <span className="text-sm font-medium text-gray-600">
-                    Order Date:
-                  </span>
-                  {order.createdAt ? (
-                    <span className="ml-auto text-sm font-medium text-gray-800">
-                      {format(new Date(order.createdAt), "MMMM dd, yyyy")}
-                    </span>
-                  ) : (
-                    <span className="ml-auto text-sm font-medium text-gray-800">
-                      N/A
-                    </span>
-                  )}
-                </div>
+               
                 <div className="flex items-center mb-2">
                   <span className="text-sm font-medium text-gray-600">
                     Shipping Address:
@@ -88,13 +119,46 @@ const Orders = () => {
                   </h3>
                   <ul className="list-disc list-inside">
                     {order.cartItems.map((item) => (
-                      <li key={item._id} className="flex items-center mb-2">
-                        <img
-                          src={item.image}
-                          alt={item.name}
-                          className="w-8 h-8 object-cover mr-2 mx-2"
-                        />
-                        <span className="traking-wider">{`${item.name} x ${item.num}`}</span>
+                      <li
+                        key={item._id}
+                        className="flex items-center mb-2 my-4 border p-2 "
+                      >
+                        <div className="">
+                          <div className="flex">
+                            <img
+                              src={item.image}
+                              alt={item.name}
+                              className="w-8 h-8 object-cover mr-2 mx-2"
+                            />
+                            <span className="traking-wider">{`${item.name} x ${item.num}`}</span>
+                          </div>
+                          <div className="flex overflow-scroll">
+                            <button
+                              className="mr-2 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
+                              onClick={() =>
+                                updateOrderStatus(order._id, "pending")
+                              }
+                            >
+                              Pending
+                            </button>
+                            <button
+                              className="mr-2 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded"
+                              onClick={() =>
+                                updateOrderStatus(order._id, "shipped")
+                              }
+                            >
+                              Shipped
+                            </button>
+                            <button
+                              className="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded"
+                              onClick={() =>
+                                updateOrderStatus(order._id, "delivered")
+                              }
+                            >
+                              Delivered
+                            </button>
+                          </div>
+                        </div>
                       </li>
                     ))}
                   </ul>

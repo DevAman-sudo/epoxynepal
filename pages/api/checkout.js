@@ -11,7 +11,7 @@ export default async function handler(req, res) {
   // POST REQUEST
   if (method === "POST") {
     const { userId, cartItems, phoneNumber, address, apartment } = req.body;
-
+    
     try {
       const filter = { userId: userId };
       const update = { $push: { cartItems: cartItems }, phoneNumber: phoneNumber, address: address, apartment: apartment };
@@ -34,6 +34,13 @@ export default async function handler(req, res) {
       console.log(`Error from checkout api => ${error}`)
       res.status(500).json("Enternal Server Error. ")
     }
+
+  }
+
+  else if (method == "PUT") {
+
+    console.log(req.body)
+    res.json({msg: "hello"})
 
   }
   else {

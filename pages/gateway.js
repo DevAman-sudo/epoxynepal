@@ -3,8 +3,10 @@ import Router from "next/router";
 import Cookies from "js-cookie";
 import Loading from "../components/Loading";
 import axios from "axios";
+import { useRouter } from "next/router";
 
 const gateway = () => {
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [showAlert, setShowAlert] = useState(false);
@@ -14,9 +16,36 @@ const gateway = () => {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [address, setAddress] = useState("");
   const [apartment, setApartment] = useState("");
+  const [username, setUsername] = useState("")
 
   const userId = Cookies.get("user_id");
   const token = Cookies.get("token");
+
+  // fetching user data
+  useEffect(() => {
+    if (userId) {
+      const fetchUserData = async () => {
+        try {
+          const response = await fetch(`/api/users?id=${userId}`, {
+            method: "POST",
+          });
+
+          if (!response.ok) {
+            throw new Error("Error fetching user data");
+          }
+
+          const data = await response.json();
+
+          setUsername(data.name);
+        } catch (error) {
+          console.log(error.message);
+        }
+      };
+      fetchUserData();
+    } else {
+      router.push("/login?message=Please Log In");
+    }
+  }, [userId]);
 
   // get total price
   function getTotalPrice() {
@@ -60,35 +89,31 @@ const gateway = () => {
   // handeling checkout data
   const handleSubmit = async (event) => {
     event.preventDefault();
-    setLoading(true)
+    setLoading(true);
 
-    const cartItems = JSON.parse(localStorage.getItem("products"))
-    
+    const cartItems = JSON.parse(localStorage.getItem("products"));
+
     try {
-
-      const response = await axios.post('/api/checkout', {
+      const response = await axios.post("/api/checkout", {
+        username,
         userId,
         cartItems,
         phoneNumber,
         address,
-        apartment
-      })
+        apartment,
+      });
 
-      if (response.statusText == 'OK') {
+      if (response.statusText == "OK") {
+        localStorage.removeItem("productData");
+        localStorage.removeItem("products");
+        localStorage.removeItem("cartNumber");
 
-        localStorage.removeItem("productData")
-        localStorage.removeItem("products")
-        localStorage.removeItem("cartNumber")
-
-        Router.push(`/profile/${userId}`)
-
+        Router.push(`/profile/${userId}`);
       } else {
-        setLoading(false)
-        setMessage("Something went Wrong, Please try Again. ")
-        setShowAlert(true)
+        setLoading(false);
+        setMessage("Something went Wrong, Please try Again. ");
+        setShowAlert(true);
       }
-      
-
     } catch (error) {
       setLoading(false);
       setMessage("Internet Connection not Stable. ");
@@ -98,7 +123,6 @@ const gateway = () => {
     setTimeout(() => {
       setShowAlert(false);
     }, 3000);
-
   };
 
   return (

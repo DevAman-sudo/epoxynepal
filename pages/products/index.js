@@ -308,6 +308,7 @@ const ProductPage = () => {
                   >
                     {categoryData.map((category, index) => (
                       <li key={category._id}>
+                        <img className="w-20 h-20 object-cover rounded-full" src={category.image} />
                         <a
                           href="#"
                           onClick={() =>
