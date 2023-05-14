@@ -22,7 +22,11 @@ const cart = () => {
       const cartItems = JSON.parse(localStorage.getItem("products"));
 
       const totalPrice = cartItems.reduce((accumulator, currentItem) => {
-        const productPrice = currentItem.price * currentItem.num;
+        let productPrice = currentItem.price * currentItem.num;
+        if (currentItem.discount) {
+          const discountPrice = productPrice * (currentItem.discount / 100);
+          productPrice -= discountPrice;
+        }
         return accumulator + productPrice;
       }, 0);
 
@@ -59,6 +63,7 @@ const cart = () => {
 
         // Set the product data from local storage on component mount
         const storedProductData = JSON.parse(localStorage.getItem("products"));
+        console.log(storedProductData);
         setProductData(storedProductData || []);
 
         getTotalPrice();
@@ -207,9 +212,19 @@ const cart = () => {
                         />
                       </div>
                       <div className="flex items-center space-x-4">
-                        <p className="text-sm">
-                          Rs {product.price * product.num}{" "}
-                        </p>
+                        {product.discount === 0 ? (
+                          <p className="text-sm">
+                            Rs {product.price * product.num}
+                          </p>
+                        ) : (
+                          <p className="text-sm">
+                            Rs{" "}
+                            {(product.price / 100) *
+                              product.discount *
+                              product.num}
+                          </p>
+                        )}
+
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           fill="none"

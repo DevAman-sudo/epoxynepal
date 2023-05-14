@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useRouter } from "next/router";
+import Router from "next/router";
 import axios from "axios";
 import Loading from "../../components/Loading";
 import Cookies from "js-cookie";
@@ -14,6 +15,7 @@ const Details = () => {
   const [showAlert, setShowAlert] = useState(false);
   const [productDataLocal, setProductDataLocal] = useState([]);
   const [num, setNum] = useState(1);
+  const [disPrice, setDisPrice] = useState("");
 
   const token = Cookies.get("token");
   const userId = Cookies.get("user_id");
@@ -30,18 +32,23 @@ const Details = () => {
   // getProducts
   const getProducts = async () => {
     setLoading(true);
-    const { id } = router.query;
-
-    const idData = id
 
     try {
-     
-      const response = await axios.get('/api/admin/products')
-      const data = response.data
-      const foundData = data.find((item) => item._id === idData);
-      setProductDataLocal(foundData);
-      setLoading(false)
+      const response = await axios.get("/api/admin/products");
+      const data = response.data;
+      const foundData = data.find((item) => item._id == Router.query.ids);
 
+      const discountPrice = foundData.price - ((foundData.price / 100) * foundData.discount);
+      const newFoundData = { ...foundData, discountPrice };
+      
+      setDisPrice(discountPrice)
+
+      if (foundData.discount > 0) {
+        setProductDataLocal(newFoundData);
+      } else {
+        setProductDataLocal(foundData);
+      }
+      setLoading(false);
     } catch (error) {
       setLoading(false);
       setMessage("Something Went Wrong. ");
@@ -64,9 +71,9 @@ const Details = () => {
       router.push("/login?message=Please Log In");
     } else {
       try {
-        const productId = router.query.id;
-        const newProductData = [...context.productData, { productId, num }];
-
+        const productId = router.query.ids;
+        const newProductData = [...context.productData, { productId, num , disPrice }];
+        
         context.setProductData(newProductData);
         router.push("/cart?message=Items added to Cart");
 
@@ -121,10 +128,10 @@ const Details = () => {
                 <div className="relative">
                   <img
                     src={productDataLocal.image}
-                    className="w-full relative z-50"
+                    className="w-full relative "
                     alt=""
                   />
-                  <div className="border-4 border-themecolor absolute top-10 bottom-10 left-10 right-10 z-0"></div>
+                  <div className="border-4 border-themecolor absolute top-10 bottom-10 left-10 right-10 z-[-1]"></div>
                 </div>
               </div>
               <div className="w-full md:w-1/2 px-10">
@@ -139,9 +146,22 @@ const Details = () => {
                     <span className="text-2xl leading-none align-baseline">
                       Rs
                     </span>
-                    <span className="font-bold text-5xl leading-none align-baseline">
-                      {productDataLocal.price}
-                    </span>
+                    <div className="flex flex-col">
+                      {productDataLocal.discountPrice ? (
+                        <span className="font-bold text-5xl leading-none align-baseline line-through">
+                          {productDataLocal.price}
+                        </span>
+                      ) : (
+                        <span className="font-bold text-5xl leading-none align-baseline">
+                          {productDataLocal.price}
+                        </span>
+                      )}
+                      {productDataLocal.discountPrice ? (
+                        <span className="font-bold text-5xl leading-none align-baseline">
+                          {productDataLocal.discountPrice}
+                        </span>
+                      ) : null}
+                    </div>
                   </div>
 
                   <div className="flex items-center my-4 w-12 h-auto border-gray-900">

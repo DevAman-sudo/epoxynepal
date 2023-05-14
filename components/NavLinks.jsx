@@ -160,6 +160,16 @@ const NavLinks = () => {
             Orders
           </a>
         </li>
+
+        <li className="mt-4 md:mt-0 border-b border-gray-400 md:border-none pb-2 md:pb-0">
+          <a
+            className={styles.menuItems}
+            href="/admin/discount"
+            aria-current="page"
+          >
+            Discount
+          </a>
+        </li>
       </>
     );
   } else {

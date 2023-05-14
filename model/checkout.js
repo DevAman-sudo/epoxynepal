@@ -56,6 +56,10 @@ const cartSchema = new mongoose.Schema({
   apartment: {
     type: String
   },
+  status: {
+    type: String,
+    default: "pending"
+  },
   createdAt: {
     type: Date,
     default: Date.now

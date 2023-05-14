@@ -12,7 +12,7 @@ function classNames(...classes) {
 }
 
 const ProductPage = () => {
-  const router = useRouter()
+  const router = useRouter();
   const context = useContext(AppContext);
   const [loading, setLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(true);
@@ -101,7 +101,7 @@ const ProductPage = () => {
   // redirection to show details page
   const showDetails = async (id) => {
     try {
-      Router.push(`/products/${id}`);
+      Router.push(`/products/details?ids=${id}`);
     } catch (error) {
       setLoading(false);
       setMessage("Something went Wrong. ");
@@ -113,14 +113,13 @@ const ProductPage = () => {
     }, 3000);
   };
 
-  // category search filter redirected from home 
+  // category search filter redirected from home
   const { category } = router.query;
   useEffect(() => {
     if (category) {
-     handleCategorySearch(category)
+      handleCategorySearch(category);
     }
   }, [category]);
-
 
   // get newset Products
   const getNewest = async () => {
@@ -163,7 +162,7 @@ const ProductPage = () => {
     const filteredData = data.filter((item) =>
       item.name.toLowerCase().includes(context.query.toLowerCase())
     );
-    
+
     if (filteredData.length === 0) {
       setQueryMessage("Product not found.");
     } else {
@@ -308,7 +307,10 @@ const ProductPage = () => {
                   >
                     {categoryData.map((category, index) => (
                       <li key={category._id}>
-                        <img className="w-20 h-20 object-cover rounded-full" src={category.image} />
+                        <img
+                          className="w-20 h-20 object-cover rounded-full"
+                          src={category.image}
+                        />
                         <a
                           href="#"
                           onClick={() =>
@@ -335,7 +337,7 @@ const ProductPage = () => {
                       onClick={() => showDetails(product._id)}
                       className="flex flex-wrap cursor-pointer"
                     >
-                      <div className="p-2 w-36 md:w-52 max-h-68 m-1 md:p-1 bg-milky flex flex-col justify-between  hover:bg-gray-200 transition duration-300 ease-in-out transform-gpu hover:scale-105">
+                      <div className="p-2 w-36 md:w-52 h-80 aspect-w-1 m-1 md:p-1 bg-milky flex flex-col justify-between  hover:bg-gray-200 transition duration-300 ease-in-out transform-gpu hover:scale-105">
                         <div>
                           <img
                             className="ml-[70%] w-10 h-10 bg-themecolor rounded-full p-2 mt-2"
@@ -353,12 +355,29 @@ const ProductPage = () => {
                         </div>
                         <div className="w-40 m-2 flex flex-col-reverse justify-end">
                           <h2 className={` m-0.5 `}>
-                            <span className="text-sm">Rs </span>
-                            <span className="text-lg font-500 text-green-900 tracking-wider whitespace-normal">
-                              {product.price}{" "}
-                            </span>
+                            <div className="flex">
+                            <span className="text-sm ml-2">Rs </span>
+
+                            <div className="flex justify-around">
+                              {product.discount === 0 ? (
+                                <span className="text-lg mx-2 font-500 text-green-900 tracking-wider whitespace-normal">
+                                  {product.price}
+                                </span>
+                              ) : (
+                                <>
+                                  <span className="text-lg ml-2 font-500 text-green-900 tracking-wider whitespace-normal line-through">
+                                    {product.price}
+                                  </span>
+                                  <span className="text-lg ml-2 font-500 text-green-900 tracking-wider whitespace-normal">
+                                    {product.price -
+                                      (product.price / 100) * product.discount}
+                                  </span>
+                                </>
+                              )}
+                            </div>
+                            </div>
                           </h2>
-                          <h2 className="m-0.5 text-gray-600 font-900 tracking-widest capitalize text-base">
+                          <h2 className="m-0.5 text-gray-600 font-700 text-sm tracking-widest capitalize mr-8">
                             {product.name}
                           </h2>
                         </div>

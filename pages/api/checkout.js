@@ -11,10 +11,15 @@ export default async function handler(req, res) {
   // POST REQUEST
   if (method === "POST") {
     const { userId, cartItems, phoneNumber, address, apartment } = req.body;
-    
+
     try {
       const filter = { userId: userId };
-      const update = { $push: { cartItems: cartItems }, phoneNumber: phoneNumber, address: address, apartment: apartment };
+      const update = {
+        $push: { cartItems: cartItems },
+        phoneNumber: phoneNumber,
+        address: address,
+        apartment: apartment,
+      };
       const options = { upsert: true, new: true, setDefaultsOnInsert: true };
 
       const updatedCart = await Cart.findOneAndUpdate(filter, update, options);
@@ -22,28 +27,34 @@ export default async function handler(req, res) {
     } catch (error) {
       res.status(500).json({ message: "Server error" });
     }
+  } else if (method == "GET") {
+    try {
+      const response = await Cart.find();
+      res.status(200).json(response);
+    } catch (error) {
+      console.log(`Error from checkout api => ${error}`);
+      res.status(500).json("Enternal Server Error. ");
+    }
   }
-  else if (method == "GET") {
+   else if (method == "DELETE") {
+    const { id } = req.query;
+    console.log(id)
 
     try {
-
-      const response = await Cart.find()
-      res.status(200).json(response)
-
+      const deletedCart = await Cart.find();
+      console.log(deletedCart)
+      // if (deletedCart) {
+      //   res.status(200).json({ message: "Cart deleted successfully." });
+      // } else {
+      //   res.status(404).json({ message: "Cart not found." });
+      // }
+      res.json("dssvfv")
     } catch (error) {
-      console.log(`Error from checkout api => ${error}`)
-      res.status(500).json("Enternal Server Error. ")
+      console.log(`Error from checkout api => ${error}`);
+      res.status(500).json("Internal Server Error.");
     }
-
   }
-
-  else if (method == "PUT") {
-
-    console.log(req.body)
-    res.json({msg: "hello"})
-
-  }
-  else {
+   else {
     res.status(405).json({ message: "Method not Allowed" });
   }
 }

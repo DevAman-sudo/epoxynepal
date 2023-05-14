@@ -47,7 +47,6 @@ const Orders = () => {
       }));
 
       setOrders(ordersWithUsername);
-      console.log(ordersWithUsername)
       setLoading(false);
     } catch (error) {
       console.log(error);
@@ -56,13 +55,11 @@ const Orders = () => {
   };
 
   // Update order status
-  const updateOrderStatus = async (orderId, status) => {
-    console.log(orderId, status);
+  const updateOrderStatus = async (orderId) => {
     try {
-      const response = await axios.put(`/api/checkout/${orderId}`, { status });
+      const response = await axios(`/api/checkout?id=${orderId}`);
       // fetchOrders();
       console.log(response);
-      console.log(orderId);
     } catch (error) {
       console.log(error);
     }
@@ -134,29 +131,14 @@ const Orders = () => {
                           </div>
                           <div className="flex overflow-scroll">
                             <button
-                              className="mr-2 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
+                              className="mr-2 bg-red-500 hover:bg-delete-600 text-white font-bold py-2 px-4 rounded"
                               onClick={() =>
-                                updateOrderStatus(order._id, "pending")
+                                updateOrderStatus(order._id)
                               }
                             >
-                              Pending
+                              Delete
                             </button>
-                            <button
-                              className="mr-2 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded"
-                              onClick={() =>
-                                updateOrderStatus(order._id, "shipped")
-                              }
-                            >
-                              Shipped
-                            </button>
-                            <button
-                              className="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded"
-                              onClick={() =>
-                                updateOrderStatus(order._id, "delivered")
-                              }
-                            >
-                              Delivered
-                            </button>
+                          
                           </div>
                         </div>
                       </li>

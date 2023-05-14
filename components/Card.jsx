@@ -26,7 +26,7 @@ const Card = () => {
 
   // redirection to show details page
   const showDetails = async (id) => {
-    Router.push(`/products/${id}`);
+    Router.push(`/products/details?ids=${id}`);
   };
 
   if (loading) {
@@ -83,13 +83,33 @@ const Card = () => {
                 />
               </div>
               <div className="w-40 m-2 flex flex-col-reverse justify-end">
-                <h2 className={` m-0.5 `}>
-                  Rs <span className="text-xl font-500 text-green-900 tracking-wider">{product.price} </span>
-                </h2>
-                <h2 className="m-0.5 text-gray-600 font-900 tracking-widest capitalize text-xl">
-                  {product.name}
-                </h2>
-              </div>
+                          <h2 className={` m-0.5 `}>
+                            <div className="flex">
+                            <span className="text-sm ml-2">Rs </span>
+
+                            <div className="flex justify-around">
+                              {product.discount === 0 ? (
+                                <span className="text-lg mx-2 font-500 text-green-900 tracking-wider whitespace-normal">
+                                  {product.price}
+                                </span>
+                              ) : (
+                                <>
+                                  <span className="text-lg ml-2 font-500 text-green-900 tracking-wider whitespace-normal line-through">
+                                    {product.price}
+                                  </span>
+                                  <span className="text-lg ml-2 font-500 text-green-900 tracking-wider whitespace-normal">
+                                    {product.price -
+                                      (product.price / 100) * product.discount}
+                                  </span>
+                                </>
+                              )}
+                            </div>
+                            </div>
+                          </h2>
+                          <h2 className="m-0.5 text-gray-600 font-700 text-sm tracking-widest capitalize mr-8">
+                            {product.name}
+                          </h2>
+                        </div>
             </div>
           </a>
         ))}

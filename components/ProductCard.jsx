@@ -39,14 +39,33 @@ const ProductCard = () => {
               alt="epoxy products"
             />
           </div>
-          <div className="w-24 md:w-36 m-4">
-            <h2 className="m-0.5 text-gray-600 text-sm font-bold">
+          <div className="w-40 m-2 flex flex-col-reverse justify-end">
+            <h2 className={` m-0.5 `}>
+              <div className="flex">
+                <span className="text-sm ml-2">Rs </span>
+
+                <div className="flex justify-around">
+                  {product.discount === 0 ? (
+                    <span className="text-lg mx-2 font-500 text-green-900 tracking-wider whitespace-normal">
+                      {product.price}
+                    </span>
+                  ) : (
+                    <>
+                      <span className="text-lg ml-2 font-500 text-green-900 tracking-wider whitespace-normal line-through">
+                        {product.price}
+                      </span>
+                      <span className="text-lg ml-2 font-500 text-green-900 tracking-wider whitespace-normal">
+                        {product.price -
+                          (product.price / 100) * product.discount}
+                      </span>
+                    </>
+                  )}
+                </div>
+              </div>
+            </h2>
+            <h2 className="m-0.5 text-gray-600 font-700 text-sm tracking-widest capitalize mr-8">
               {product.name}
             </h2>
-            <h2 className="m-0.5 text-gray-600 text-sm font-bold">
-              {product.description}
-            </h2>
-            <h2 className="m-0.5 font-bold">Rs {product.price}</h2>
           </div>
         </div>
       ))}

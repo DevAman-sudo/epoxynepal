@@ -95,7 +95,7 @@ const gateway = () => {
 
     try {
       const response = await axios.post("/api/checkout", {
-        username,
+        
         userId,
         cartItems,
         phoneNumber,
