@@ -209,6 +209,9 @@ const discount = () => {
       setMessage("Internet Connection not Stable. ")
       setShowAlert(true)
     }
+    setTimeout(() => {
+      setShowAlert(false);
+    }, 3000);
 
   }
   useEffect( () => {

@@ -14,9 +14,24 @@ const cart = () => {
   const [showAlert, setShowAlert] = useState(false);
   const [productData, setProductData] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
-  const [shipingCost, setShipingCost] = useState(1500);
+  const [cost, setCost] = useState(0);
 
   useEffect(() => {
+    // get shipping cost
+    const getShippingCost = async () => {
+      try {
+        const response = await axios.get("/api/admin/shipping");
+        setCost(response.data.data[0].shipping);
+      } catch (error) {
+        setMessage("Internet Connection not Stable. ");
+        setShowAlert(true);
+      }
+      setTimeout(() => {
+        setShowAlert(false);
+      }, 3000);
+    };
+    getShippingCost();
+
     // get total price
     function getTotalPrice() {
       const cartItems = JSON.parse(localStorage.getItem("products"));
@@ -254,14 +269,14 @@ const cart = () => {
               </div>
               <div className="flex justify-between">
                 <p className="text-gray-700">Shipping</p>
-                <p className="text-gray-700">Rs {shipingCost}</p>
+                <p className="text-gray-700">Rs {cost}</p>
               </div>
               <hr className="my-4" />
               <div className="flex justify-between">
                 <p className="text-md font-bold">Total</p>
                 <div className="">
                   <p className="mb-1 text-md font-bold">
-                    Rs {totalPrice + shipingCost}
+                    Rs {totalPrice + cost}
                   </p>
                 </div>
               </div>

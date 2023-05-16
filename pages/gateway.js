@@ -12,7 +12,7 @@ const gateway = () => {
   const [showAlert, setShowAlert] = useState(false);
   const [productData, setProductData] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
-  const [shipingCost, setShipingCost] = useState(1500);
+  const [shipingCost, setShipingCost] = useState(0);
   const [phoneNumber, setPhoneNumber] = useState("");
   const [address, setAddress] = useState("");
   const [apartment, setApartment] = useState("");
@@ -20,6 +20,21 @@ const gateway = () => {
 
   const userId = Cookies.get("user_id");
   const token = Cookies.get("token");
+
+    // get shipping cost
+    const getShippingCost = async () => {
+      try {
+        const response = await axios.get("/api/admin/shipping");
+        setShipingCost(response.data.data[0].shipping);
+      } catch (error) {
+        setMessage("Internet Connection not Stable. ");
+        setShowAlert(true);
+      }
+      setTimeout(() => {
+        setShowAlert(false);
+      }, 3000);
+    };
+    getShippingCost();
 
   // fetching user data
   useEffect(() => {
