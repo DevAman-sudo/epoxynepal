@@ -23,6 +23,8 @@ const discount = () => {
   const [queryMessage, setQueryMessage] = useState("");
   const [discount, setDiscount] = useState({});
   const [hiddenId, setHiddenId] = useState("");
+  const [shippingCost, setShippingCost] = useState(0);
+  const [cost, setCost] = useState(0)
 
   // Check authentication
   useEffect(() => {
@@ -176,6 +178,7 @@ const discount = () => {
       const response = await axios.post(
         `/api/discount?id=${hiddenId}&discount=${discountRate}`
       );
+      getProducts();
       setMessage(response.data.message);
       setShowAlert(true);
       setLoading(false);
@@ -188,6 +191,45 @@ const discount = () => {
     setTimeout(() => {
       setShowAlert(false);
     }, 3000);
+  };
+
+  // handle shipping 
+  const handleInputChange = (event) => {
+    setShippingCost(event.target.value);
+  };
+
+  const getShippingCost = async () => {
+
+    try {
+
+      const response = await axios.get('/api/admin/shipping')
+      setCost(response.data.data[0].shipping)
+
+    } catch (error) {
+      setMessage("Internet Connection not Stable. ")
+      setShowAlert(true)
+    }
+
+  }
+  useEffect( () => {
+    getShippingCost()
+  }, [])
+
+  const handleShipping = async (event) => {
+    event.preventDefault();
+    setLoading(true)
+
+    try {
+      const response = await axios.post(`/api/admin/shipping?cost=${shippingCost}`);
+      setMessage(response.data.message)
+      getShippingCost()
+      setShowAlert(true)
+      setLoading(false)
+    } catch (error) {
+     setMessage("Something went Roung. ")
+      setShowAlert(true)
+      setLoading(false)
+    }
   };
 
   // handle search query
@@ -236,6 +278,36 @@ const discount = () => {
 
       <div className="container mx-auto px-4">
         <h1 className="text-2xl font-bold mt-8 mb-4">Product CRUD Page</h1>
+
+        {/* shipping cost form  */}
+        <form onSubmit={handleShipping} >
+          <label
+            htmlFor="shipping-cost"
+            className="block font-medium text-gray-700"
+          >
+            Shipping Cost
+          </label>
+          <p>{ cost }</p>
+          <div className="mt-1 relative rounded-md shadow-sm">
+            <input
+              id="shipping-cost"
+              type="number"
+              required
+              value={shippingCost}
+              onChange={handleInputChange}
+              className="focus:ring-indigo-500 focus:border-indigo-500 px-2 border mx-2 block w-full sm:text-sm border-gray-300 rounded-md"
+              placeholder="Enter shipping cost"
+            />
+          </div>
+          <div className="mt-4">
+            <button
+              type="submit"
+              className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            >
+              Upload Shipping Cost
+            </button>
+          </div>
+        </form>
 
         {/* products data  */}
         <div className="my-8">
