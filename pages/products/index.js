@@ -364,7 +364,7 @@ const ProductPage = () => {
                                   {product.price}
                                 </span>
                               ) : (
-                                <>
+                                <div className="flex flex-col md:flex-row">
                                   <span className="text-lg ml-2 font-500 text-green-900 tracking-wider whitespace-normal line-through">
                                     {product.price}
                                   </span>
@@ -372,7 +372,7 @@ const ProductPage = () => {
                                     {product.price -
                                       (product.price / 100) * product.discount}
                                   </span>
-                                </>
+                                </div>
                               )}
                             </div>
                             </div>

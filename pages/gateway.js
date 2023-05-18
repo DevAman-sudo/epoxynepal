@@ -109,13 +109,14 @@ const gateway = () => {
     const cartItems = JSON.parse(localStorage.getItem("products"));
 
     try {
-      const response = await axios.post("/api/checkout", {
-        
+      const response = await axios.post("/api/order", {
+      
         userId,
         cartItems,
         phoneNumber,
         address,
         apartment,
+
       });
 
       if (response.statusText == "OK") {
