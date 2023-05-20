@@ -49,6 +49,7 @@ const profile = () => {
   const [cartData, setCartData] = useState([]);
   const [userData, setUserData] = useState([]);
   const userID = router.query.userId;
+  const cookieId = Cookies.get("user_id")
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -81,9 +82,11 @@ const profile = () => {
     setLoading(true);
 
     try {
-      const response = await axios.get("/api/checkout");
-      setCartData(response.data[0].cartItems);
-      setUserData(response.data[0]);
+      const response = await axios.get(`/api/order?id=${cookieId}`)
+      console.log(response)
+      setCartData(response.data);
+      setUserData(response.data);
+      console.log(response)
       setCircleLoading(false);
 
       setLoading(false);

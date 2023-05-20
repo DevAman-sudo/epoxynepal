@@ -2,6 +2,7 @@ import connectMongo from "../../database/conn"
 import Order from "../../model/order";
 import OrderItem from "../../model/orderItem";
 import Product from "../../model/product";
+import User from "../../model/user";
 
 export default async function handler(req, res) {
   await connectMongo().catch(() => {
@@ -10,10 +11,24 @@ export default async function handler(req, res) {
 
   const { method } = req
 
-  console.log(req.body)
-
 //   get method 
   if (method == 'GET') {
+
+    try {
+
+      const order = await Order.find({ user: req.query.id})
+      .populate('user', 'name')
+      .populate({ 
+          path: 'orderItems', populate: {
+              path : 'product', populate: 'category'} 
+          });
+  
+      res.status(200).send(order);
+
+    } catch (error) {
+      console.log(`Error from Order.js => ${error}`)
+      res.status(500).json("Internal Server Error")
+    }
     
 
   } 
@@ -43,7 +58,6 @@ export default async function handler(req, res) {
         }))
     
         const totalPrice = totalPrices.reduce((a,b) => a +b , 0);
-        console.log(totalPrice)
     
         let order = new Order({
             orderItems: orderItemsIdsResolved,
@@ -51,7 +65,7 @@ export default async function handler(req, res) {
             apartment: req.body.apartment,
             phone: req.body.phoneNumber,
             status: req.body.status,
-            totalPrice: totalPrice,
+            totalPrice: req.body.totalPrice,
             user: req.body.userId,
         })
         order = await order.save();

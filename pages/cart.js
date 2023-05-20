@@ -78,7 +78,7 @@ const cart = () => {
 
         // Set the product data from local storage on component mount
         const storedProductData = JSON.parse(localStorage.getItem("products"));
-        console.log(storedProductData);
+        
         setProductData(storedProductData || []);
 
         getTotalPrice();

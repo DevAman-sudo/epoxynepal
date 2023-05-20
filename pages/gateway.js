@@ -116,6 +116,7 @@ const gateway = () => {
         phoneNumber,
         address,
         apartment,
+        totalPrice
 
       });
 
@@ -124,7 +125,7 @@ const gateway = () => {
         localStorage.removeItem("products");
         localStorage.removeItem("cartNumber");
 
-        Router.push(`/profile/${userId}`);
+        Router.push(`/profile/orders`);
       } else {
         setLoading(false);
         setMessage("Something went Wrong, Please try Again. ");
