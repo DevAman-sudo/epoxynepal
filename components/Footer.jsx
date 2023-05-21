@@ -249,7 +249,7 @@ const Footer = () => {
 
         <div className="text-center p-4 text-bold">
           © 2023 Copyright:
-          <a className="text-black font-semibold mx-1" href="#">
+          <a className="text-black font-semibold mx-1" href="https://www.facebook.com/devaman.sudo/">
             Devaman
           </a>
         </div>
