@@ -14,7 +14,7 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Hero />
-      <Details />
+      {/* <Details /> */}
       <Products />
       <ShopByArt />
       <SelectProduct />

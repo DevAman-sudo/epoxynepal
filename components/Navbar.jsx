@@ -11,6 +11,22 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [alertMessage, setAlertMessage] = useState("");
+  const [subscriberEmail, setSubscriberEmail] = useState("");
+
+  // handle sucribers
+
+  const handleSubscribe = async () => {
+    try {
+      // Send the subscriber email to the API
+      const response = await axios.post("/api/mails/subscribe", {
+        email: subscriberEmail,
+      });
+      // Handle the API response as needed
+    } catch (error) {
+      // Handle any errors
+      console.error(error);
+    }
+  };
 
   // get alert message
   const alert = async () => {
@@ -287,35 +303,37 @@ const Navbar = () => {
                         </p>
                       </div>
 
-                      <div className="md:mb-6">
+                      <div>
                         <input
-                          type="text"
                           className="
-                form-control
-                block
-                w-full
-                px-3
-                py-1.5
-                text-base
-                font-normal
-                text-gray-700
-                bg-white bg-clip-padding
-                border border-solid border-gray-300
-                rounded
-                transition
-                ease-in-out
-                m-0
-                focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none
-              "
-                          id="exampleFormControlInput1"
-                          placeholder="Email address"
+                          my-1
+                          form-control
+                          block
+                          w-full
+                          px-3
+                          py-1.5
+                          text-base
+                          font-normal
+                          text-gray-700
+                          bg-white bg-clip-padding
+                          border border-solid border-gray-300
+                          rounded
+                          transition
+                          ease-in-out
+                          m-0
+                          focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none
+                        "
+                          type="text"
+                          name="email"
+                          id="email"
+                          placeholder="Enter your email"
+                          value={subscriberEmail}
+                          onChange={ (event) => setSubscriberEmail(event.target.value) }
+                          required
                         />
-                      </div>
-
-                      <div className="md:mr-auto mb-6">
                         <button
-                          type="submit"
-                          className="inline-block px-6 py-2 border-2 border-grey-400 text-gray-400 font-medium text-xs leading-tight uppercase rounded hover:bg-grey hover:bg-opacity-5 focus:outline-none focus:ring-0 transition duration-150 ease-in-out"
+                          onClick={handleSubscribe}
+                          className="bg-themecolor hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
                         >
                           Subscribe
                         </button>

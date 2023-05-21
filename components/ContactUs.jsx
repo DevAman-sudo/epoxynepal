@@ -1,8 +1,71 @@
-import React from "react";
+import React, { useState } from "react";
+import axios from "axios";
+import Loading from "./Loading";
 
 const ContactUs = () => {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    message: "",
+  });
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
+  const [showAlert, setShowAlert] = useState(false);
+
+  const handleInputChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    setLoading(true);
+    e.preventDefault();
+    try {
+      const response = await axios.post("/api/mails/contact", formData);
+      setMessage(response.data.message);
+      setShowAlert(true)
+      setLoading(false);
+    } catch (error) {
+      console.error(error);
+      setMessage("Internet Connection not Stable. ");
+      setShowAlert(true);
+      setLoading(false);
+    }
+
+    setTimeout(() => {
+      setShowAlert(false);
+    }, 3000);
+  };
+
   return (
     <div>
+      {/* Loading page */}
+      {loading && <Loading />}
+
+      {/* Popup alert */}
+      {showAlert && (
+        <div className="fixed top-0 left-0 lg:left-auto right-0 z-50 p-4">
+          <div className="mx-auto max-w-sm bg-white rounded-lg shadow-lg flex items-center">
+            <div className="flex-shrink-0">
+              <svg
+                className="h-8 w-8 text-gray-400"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M16 10a6 6 0 11-12 0 6 6 0 0112 0zm-6 5a1 1 0 100-2 1 1 0 000 2zm0-10a1 1 0 100-2 1 1 0 000 2zM5.78 14.55a4.002 4.002 0 01-1.513-1.513A5.984 5.984 0 013 10a6 6 0 1111.268 3H13a1 1 0 00-1 1v1a1 1 0 102 0v-1a3 3 0 00-3-3h-.268A5.992 5.992 0 015.78 14.55zM10 12a1 1 0 100-2 1 1 0 000 2z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </div>
+            <div className="ml-4">
+              <div className="mt-2 mx-2 text-sm text-gray-500">{message}</div>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="container my-24 px-6 mx-auto">
         <section className="mb-32 text-gray-800">
           <div className="flex justify-center">
@@ -13,96 +76,41 @@ const ContactUs = () => {
 
           <div className="flex flex-wrap">
             <div className="grow-0 shrink-0 basis-auto mb-12 md:mb-0 w-full md:w-5/12 px-3 md:px-6">
-              <form>
+              <form onSubmit={handleSubmit}>
                 <div className="form-group mb-6">
                   <input
                     type="text"
-                    className="form-control block
-          w-full
-          px-3
-          py-1.5
-          text-base
-          font-normal
-          text-gray-700
-          bg-white bg-clip-padding
-          border border-solid border-gray-300
-          rounded
-          transition
-          ease-in-out
-          m-0
-          focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
-                    id="exampleInput7"
+                    className="form-control block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding border border-solid border"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleInputChange}
                     placeholder="Name"
                   />
                 </div>
                 <div className="form-group mb-6">
                   <input
                     type="email"
-                    className="form-control block
-          w-full
-          px-3
-          py-1.5
-          text-base
-          font-normal
-          text-gray-700
-          bg-white bg-clip-padding
-          border border-solid border-gray-300
-          rounded
-          transition
-          ease-in-out
-          m-0
-          focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
-                    id="exampleInput8"
-                    placeholder="Email address"
+                    className="form-control block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding border border-solid border"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    placeholder="Email"
                   />
                 </div>
                 <div className="form-group mb-6">
                   <textarea
-                    className="
-          form-control
-          block
-          w-full
-          px-3
-          py-1.5
-          text-base
-          font-normal
-          text-gray-700
-          bg-white bg-clip-padding
-          border border-solid border-gray-300
-          rounded
-          transition
-          ease-in-out
-          m-0
-          focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none
-        "
-                    id="exampleFormControlTextarea13"
-                    rows="3"
+                    className="form-control block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding border border-solid border"
+                    name="message"
+                    value={formData.message}
+                    onChange={handleInputChange}
                     placeholder="Message"
                   ></textarea>
                 </div>
-               
                 <button
                   type="submit"
-                  className="
-        w-full
-        px-6
-        py-2.5
-        bg-themecolor
-        text-white
-        font-medium
-        text-xs
-        leading-tight
-        uppercase
-        rounded
-        shadow-md
-        hover:bg-gray-700 hover:shadow-md
-        focus:bg-gray-700 focus:shadow-md focus:outline-none focus:ring-0
-        active:bg-gray-800 active:shadow-md
-        transition
-        duration-150
-        ease-in-out"
+                  className="btn-primary px-6 py-2.5 text-base font-medium text-white bg-blue-500 hover:bg-blue-600 rounded-lg"
                 >
-                  Send
+                  Submit
                 </button>
               </form>
             </div>

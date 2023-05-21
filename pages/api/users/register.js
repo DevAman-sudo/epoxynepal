@@ -45,7 +45,62 @@ export default async function handler(req, res) {
           from: process.env.EMAIL_USER,
           to: email,
           subject: "Verify your email address",
-          html: `<p style="color: #333;">Please click <a href="${verificationLink}">here</a> to verify your email address.</p>`,
+          html: `
+            <html>
+              <head>
+                <style>
+                  body {
+                    font-family: Arial, sans-serif;
+                    background-color: #f3f3f3;
+                    margin: 0;
+                    padding: 0;
+                  }
+                  
+                  .container {
+                    max-width: 600px;
+                    margin: 0 auto;
+                    background-color: #ffffff;
+                    padding: 20px;
+                    border-radius: 5px;
+                    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                  }
+                  
+                  .logo {
+                    text-align: center;
+                    margin-bottom: 20px;
+                  }
+                  
+                  .logo img {
+                    max-width: 200px;
+                  }
+                  
+                  .message {
+                    color: #333333;
+                  }
+                  
+                  .button {
+                    display: inline-block;
+                    background-color: #4caf50;
+                    color: #ffffff;
+                    text-decoration: none;
+                    padding: 10px 20px;
+                    border-radius: 5px;
+                  }
+                </style>
+              </head>
+              <body>
+                <div class="container">
+                  <p class="message">Please click the button below to verify your email address.</p>
+                  <p class="message">
+                    If you didn't create an account with us, you can safely ignore this email.
+                  </p>
+                  <div class="button-container" style="text-align: center;">
+                    <a class="button" href="${verificationLink}">Verify Email</a>
+                  </div>
+                </div>
+              </body>
+            </html>
+          `,
         };
         await transporter.sendMail(mailOptions);
 

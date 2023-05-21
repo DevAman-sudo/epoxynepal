@@ -14,7 +14,9 @@ const ShowOff = () => {
         <div className="w-[90%] md:w-[80%] h-auto py-8 mx-auto px-4 text-white text-center bg-themecolor ">
             <h1 className="text-2xl font-bold tracking-wider">Art of Something</h1>
             <p className="text-sm brightness-90">Lorem ipsum dolor sit, amet consectetur adipisicing elit.</p>
+            <a href="/products">
             <button className="bg-white text-black px-4 py-2 mt-2 text-sm bolder tracking-widest">Shop Now</button>
+            </a>
         </div>
       </div>
     </div>
