@@ -31,7 +31,30 @@ export default async function handler(req, res) {
       console.log(`Error from admin Order.js => ${error}`);
       res.status(500).json("Internal Server Error");
     }
-  } else {
+  }
+  
+  else if (method == "PUT") {
+
+    try {
+
+      const order = await Order.findByIdAndUpdate(
+        req.query.id,
+        {
+            status: req.body.status
+        },
+        { new: true}
+    )
+
+    res.status(200).json(order);
+
+    } catch (error) {
+
+      console.log(`Error from admin Order.js => ${error}`);
+      res.status(500).json("Internal Server Error");
+
+    }
+
+  }  else {
     res.status(405).json({ message: "Method not allowed" });
   }
 }

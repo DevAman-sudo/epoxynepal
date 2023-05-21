@@ -10,7 +10,7 @@ const Orders = () => {
   const router = useRouter();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [shipingCost, setShipingCost] = useState(0);
+  const [shippingCost, setShippingCost] = useState(0);
   const [message, setMessage] = useState("");
   const [showAlert, setShowAlert] = useState(false);
 
@@ -31,7 +31,7 @@ const Orders = () => {
   const getShippingCost = async () => {
     try {
       const response = await axios.get("/api/admin/shipping");
-      setShipingCost(response.data.data[0].shipping);
+      setShippingCost(response.data.data[0].shipping);
     } catch (error) {
       setMessage("Internet Connection not Stable. ");
       setShowAlert(true);
@@ -56,20 +56,32 @@ const Orders = () => {
   };
 
   // Update order status
-  const updateOrderStatus = async (orderId) => {
+  const updateOrderStatus = async (orderId, status) => {
+    setLoading(true);
     try {
-      const response = await axios(`/api/checkout?id=${orderId}`);
-      console.log(response);
-      fetchOrders(); // Fetch orders again after updating status
+      const response = await axios.put(`/api/admin/orders?id=${orderId}`, {
+        status,
+      });
+
+      fetchOrders();
+      setMessage("Status updated sucessfully. ");
+      setShowAlert(true);
+      setLoading(false);
     } catch (error) {
       console.log(error);
+      setMessage("Internet Connection not Stable. ");
+      setShowAlert(true);
+      setLoading(false);
     }
+    setTimeout(() => {
+      setShowAlert(false);
+    }, 3000);
   };
 
   return (
     <>
       {/* Loading page */}
-      {loading ? <Loading /> : null}
+      {loading && <Loading />}
 
       {/* Popup alert */}
       {showAlert && (
@@ -98,131 +110,124 @@ const Orders = () => {
 
       <div className="container mx-auto p-4">
         <h1 className="text-2xl font-bold mb-4">Order Tracking</h1>
-        <div className="flex flex-wrap -mx-4 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {orders.map((order) => (
-            <div className="w-full md:w-1/2 lg:w-1/3 px-4 mb-4" key={order._id}>
-              <div className="bg-white shadow rounded-lg p-4">
-                <div className="flex items-center mb-4">
-                  <span className="text-sm font-medium text-gray-600">
-                    Order #{order._id}
-                  </span>
-                </div>
-                <div className="flex items-center mb-2">
-                  <span className="text-sm font-medium text-gray-600">
-                    Customer Name:
-                  </span>
-                  <span className="ml-auto capitalize text-sm font-medium text-gray-800">
-                    {order.user.name}
-                  </span>
-                </div>
+            <div className="bg-white shadow rounded-lg p-4" key={order._id}>
+              <div className="mb-4">
+                <span className="text-sm font-medium text-gray-600">
+                  Order #{order._id}
+                </span>
+              </div>
+              <div className="mb-2">
+                <span className="text-sm font-medium text-gray-600">
+                  Customer Name:
+                </span>
+                <span className="ml-auto capitalize text-sm font-medium text-gray-800">
+                  {order.user.name}
+                </span>
+              </div>
 
-                <div className="flex items-center mb-2">
-                  <span className="text-sm font-medium text-gray-600">
-                    Date:
-                  </span>
-                  <span className="ml-auto capitalize text-sm font-medium text-gray-800">
-                    {new Date(order.dateOrdered).toLocaleString()}
-                  </span>
-                </div>
+              <div className="mb-2">
+                <span className="text-sm font-medium text-gray-600">Date:</span>
+                <span className="ml-auto capitalize text-sm font-medium text-gray-800">
+                  {format(new Date(order.dateOrdered), "MM/dd/yyyy")}
+                </span>
+              </div>
 
-                <div className="flex items-center mb-2">
-                  <span className="text-sm font-medium text-gray-600">
-                    Phone Number:
-                  </span>
-                  <span className="ml-auto text-sm font-medium text-gray-800">
-                    {order.phone}
-                  </span>
-                </div>
+              <div className="mb-2">
+                <span className="text-sm font-medium text-gray-600">
+                  Phone Number:
+                </span>
+                <span className="ml-auto text-sm font-medium text-gray-800">
+                  {order.phone}
+                </span>
+              </div>
 
-                <div className="flex items-center mb-2">
-                  <span className="text-sm font-medium text-gray-600">
-                    Email:
-                  </span>
-                  <span className="ml-auto text-sm font-medium text-gray-800">
-                    {order.user.email}
-                  </span>
-                </div>
+              <div className="mb-2">
+                <span className="text-sm font-medium text-gray-600">
+                  Email:
+                </span>
+                <span className="ml-auto text-sm font-medium text-gray-800">
+                  {order.user.email}
+                </span>
+              </div>
 
-                <div className="flex items-center mb-2">
-                  <span className="text-sm font-medium text-gray-600">
-                    Shipping Address:
-                  </span>
-                  <span className="ml-auto text-sm font-medium text-gray-800">
-                    {order.address}, {order.apartment}
-                  </span>
-                </div>
+              <div className="mb-2">
+                <span className="text-sm font-medium text-gray-600">
+                  Shipping Address:
+                </span>
+                <span className="ml-auto text-sm font-medium text-gray-800">
+                  {order.address}, {order.apartment}
+                </span>
+              </div>
 
-                <div className="flex items-center mb-2">
-                  <span className="text-sm font-medium text-gray-600">
-                    Discount:
-                  </span>
-                  <span className="ml-auto text-sm font-medium text-gray-800">
-                    {order.orderItems[0].product.discount}%
-                  </span>
-                </div>
+              <div className="mb-2">
+                <span className="text-sm font-medium text-gray-600">
+                  Discount:
+                </span>
+                <span className="ml-auto text-sm font-medium text-gray-800">
+                  {order.orderItems[0].product.discount}%
+                </span>
+              </div>
 
-                <div className="flex items-center">
-                  <span className="text-sm font-medium text-gray-600">
-                    Total Amount:
-                  </span>
-                  <span className="ml-auto text-sm font-medium text-gray-800">
-                    Rs{order.totalPrice}
-                  </span>
-                </div>
+              <div className="mb-2">
+                <span className="text-sm font-medium text-gray-600">
+                  Total Amount:
+                </span>
+                <span className="ml-auto text-sm font-medium text-gray-800">
+                  Rs {order.totalPrice}
+                </span>
+              </div>
 
-                <div className="flex items-center mb-2">
-                  <span className="text-sm font-medium text-gray-600">
-                    Shipping Cost:
-                  </span>
-                  <span className="ml-auto text-sm font-medium text-gray-800">
-                    {shipingCost}
-                  </span>
-                </div>
+              <div className="mb-2">
+                <span className="text-sm font-medium text-gray-600">
+                  Shipping Cost:
+                </span>
+                <span className="ml-auto text-sm font-medium text-gray-800">
+                  {shippingCost}
+                </span>
+              </div>
 
-                <div className="flex items-center mb-2">
-                  <span className="text-sm font-medium text-gray-600">
-                    Final Price:
-                  </span>
-                  <span className="ml-auto text-sm font-medium text-gray-800">
-                    {order.orderItems[0].product.discount > 0
-                      ? order.totalPrice -
-                        (order.totalPrice *
-                          order.orderItems[0].product.discount) /
-                          100 +
-                        shipingCost
-                      : order.totalPrice + shipingCost}
-                  </span>
-                </div>
-                <div className="mt-4">
-                  <h3 className="text-sm font-medium text-gray-600 mb-2">
-                    Items:
-                  </h3>
-                  <ul className="list-disc list-inside">
+              <div className="mb-4">
+                <span className="text-sm font-medium text-gray-600">
+                  Status:
+                </span>
+                <span className="ml-auto text-sm font-medium text-gray-800">
+                  {order.status}
+                </span>
+              </div>
 
-                    { order.orderItems.map((item) => (
-                      <li className="flex items-center mb-2 my-4 border p-2 ">
-                        <div className="">
-                          <div className="flex">
-                            <img
-                              src={item.product.image}
-                              className="w-14 h-14 object-cover mr-2 mx-2"
-                            />
-                            <span className="traking-wider">{`${item.product.name} x ${item.quantity}`}</span>
-                          </div>
-                          <div className="flex overflow-scroll">
-                            <button
-                              className="mr-2 bg-red-500 hover:bg-delete-600 text-white font-bold py-2 px-4 rounded"
-                              onClick={() => updateOrderStatus(item._id)}
-                            >
-                              Delete
-                            </button>
-                          </div>
-                        </div>
-                      </li>
-                    ))}
+              {/* Order status update */}
+              <div className="flex items-center">
+                <select
+                  className="bg-gray-200 border border-gray-300 text-gray-600 rounded-md py-2 px-4 mr-2 focus:outline-none"
+                  value={order.status}
+                  onChange={(e) => updateOrderStatus(order._id, e.target.value)}
+                >
+                  <option value="Pending">Pending</option>
+                  <option value="Shipped">Shipped</option>
+                  <option value="Delivered">Delivered</option>
+                </select>
+               
+              </div>
 
-                  </ul>
-                </div>
+              {/* Order products */}
+              <div>
+                <h2 className="text-lg font-medium mt-4 mb-2">
+                  Order Products:
+                </h2>
+                <ul>
+                  {order.orderItems.map((item) => (
+                    <li key={item._id}>
+                      <span className="text-sm font-medium text-gray-600">
+                        Product: {item.product.name}
+                      </span>
+                      <span className="ml-2 text-sm font-medium text-gray-800">
+                        Quantity: {item.quantity}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
               </div>
             </div>
           ))}
