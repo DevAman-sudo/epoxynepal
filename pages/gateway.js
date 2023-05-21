@@ -16,25 +16,27 @@ const gateway = () => {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [address, setAddress] = useState("");
   const [apartment, setApartment] = useState("");
-  const [username, setUsername] = useState("")
+  const [username, setUsername] = useState("");
 
   const userId = Cookies.get("user_id");
   const token = Cookies.get("token");
 
-    // get shipping cost
-    const getShippingCost = async () => {
-      try {
-        const response = await axios.get("/api/admin/shipping");
-        setShipingCost(response.data.data[0].shipping);
-      } catch (error) {
-        setMessage("Internet Connection not Stable. ");
-        setShowAlert(true);
-      }
-      setTimeout(() => {
-        setShowAlert(false);
-      }, 3000);
-    };
+  // get shipping cost
+  const getShippingCost = async () => {
+    try {
+      const response = await axios.get("/api/admin/shipping");
+      setShipingCost(response.data.data[0].shipping);
+    } catch (error) {
+      setMessage("Internet Connection not Stable. ");
+      setShowAlert(true);
+    }
+    setTimeout(() => {
+      setShowAlert(false);
+    }, 3000);
+  };
+  useEffect( () => {
     getShippingCost();
+  }, [])
 
   // fetching user data
   useEffect(() => {
@@ -63,16 +65,27 @@ const gateway = () => {
   }, [userId]);
 
   // get total price
+  function calculateDiscountedPriceSum(data) {
+    let sum = 0;
+  
+    for (let i = 0; i < data.length; i++) {
+      const item = data[i];
+      const price = item.price * item.num;
+      const discount = item.discount;
+      const discountedPrice = price - (price * discount / 100);
+      sum += discountedPrice;
+    }
+  
+    return sum;
+  }
+  
   function getTotalPrice() {
     const cartItems = JSON.parse(localStorage.getItem("products"));
 
-    const totalPrice = cartItems.reduce((accumulator, currentItem) => {
-      const productPrice = currentItem.price * currentItem.num;
-      return accumulator + productPrice;
-    }, 0);
-
-    setTotalPrice(totalPrice);
-    return totalPrice;
+    const discountedPriceSum = calculateDiscountedPriceSum(cartItems);
+    const totalPrice =  discountedPriceSum 
+    setTotalPrice(totalPrice)
+    return totalPrice
   }
 
   useEffect(() => {
@@ -110,14 +123,12 @@ const gateway = () => {
 
     try {
       const response = await axios.post("/api/order", {
-      
         userId,
         cartItems,
         phoneNumber,
         address,
         apartment,
-        totalPrice
-
+        totalPrice,
       });
 
       if (response.statusText == "OK") {
@@ -196,10 +207,14 @@ const gateway = () => {
                           {product.name}
                         </h6>
                         <p className="text-gray-400">x {product.num}</p>
+                        <span> discount: {product.discount}%</span>
                       </div>
                       <div>
                         <span className="font-semibold text-gray-600 text-xl">
-                          Rs {product.price * product.num}
+                          Rs{" "}
+                          {((product.price -
+                            (product.price * product.discount) / 100) *
+                            product.num).toLocaleString('en-IN')}
                         </span>
                       </div>
                     </div>
@@ -210,30 +225,18 @@ const gateway = () => {
                 <div className="mb-6 pb-6 border-b border-gray-200 text-gray-800">
                   <div className="w-full flex mb-3 items-center">
                     <div className="flex-grow">
-                      <span className="text-gray-600">Subtotal</span>
-                    </div>
-                    <div className="pl-3">
-                      <span className="font-semibold">Rs {totalPrice}</span>
-                    </div>
-                  </div>
-                  <div className="w-full flex items-center">
-                    <div className="flex-grow">
                       <span className="text-gray-600">Dilivery</span>
                     </div>
                     <div className="pl-3">
-                      <span className="font-semibold">Rs {shipingCost}</span>
+                      <span className="font-semibold">Rs {shipingCost.toLocaleString('en-IN')}</span>
                     </div>
                   </div>
-                </div>
-                <div className="mb-6 pb-6 border-b border-gray-200 md:border-none text-gray-800 text-xl">
                   <div className="w-full flex items-center">
                     <div className="flex-grow">
-                      <span className="text-gray-600">Total</span>
+                      <span className="text-gray-600">Subtotal</span>
                     </div>
                     <div className="pl-3">
-                      <span className="font-semibold">
-                        Rs {totalPrice + shipingCost}
-                      </span>
+                      <span className="font-semibold">Rs {(totalPrice + shipingCost).toLocaleString('en-IN')}</span>
                     </div>
                   </div>
                 </div>

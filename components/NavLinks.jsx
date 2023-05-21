@@ -64,7 +64,7 @@ const NavLinks = () => {
     return (
       <>
         <li className="mt-4 md:mt-0 border-b text-themecolor border-gray-400 md:border-none pb-2 md:pb-0">
-          <a className={styles.menuItems} href="/" aria-current="page">
+          <a className={styles.menuItems} href="/admin" aria-current="page">
             Home
           </a>
         </li>

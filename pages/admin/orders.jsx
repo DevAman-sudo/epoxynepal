@@ -175,7 +175,7 @@ const Orders = () => {
                   Total Amount:
                 </span>
                 <span className="ml-auto text-sm font-medium text-gray-800">
-                  Rs {order.totalPrice}
+                  Rs {order.totalPrice.toLocaleString('en-IN')}
                 </span>
               </div>
 
@@ -184,7 +184,16 @@ const Orders = () => {
                   Shipping Cost:
                 </span>
                 <span className="ml-auto text-sm font-medium text-gray-800">
-                  {shippingCost}
+                  {shippingCost.toLocaleString('en-IN')}
+                </span>
+              </div>
+
+              <div className="mb-2">
+                <span className="text-sm font-medium text-gray-600">
+                  Final Cost:
+                </span>
+                <span className="ml-auto text-sm font-medium text-gray-800">
+                  {(order.totalPrice + shippingCost).toLocaleString('en-IN')}
                 </span>
               </div>
 

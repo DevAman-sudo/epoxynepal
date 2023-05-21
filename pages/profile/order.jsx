@@ -45,6 +45,24 @@ const OrderPage = () => {
   const [message, setMessage] = useState("");
   const [showAlert, setShowAlert] = useState(false);
   const [orderData, setOrderData] = useState([]);
+  const [shipingCost, setShipingCost] = useState(0)
+
+  // get shipping cost
+  const getShippingCost = async () => {
+    try {
+      const response = await axios.get("/api/admin/shipping");
+      setShipingCost(response.data.data[0].shipping);
+    } catch (error) {
+      setMessage("Internet Connection not Stable. ");
+      setShowAlert(true);
+    }
+    setTimeout(() => {
+      setShowAlert(false);
+    }, 3000);
+  };
+  useEffect( () => {
+    getShippingCost();
+  }, [])
 
   // get order history
   const orderHistory = async () => {
@@ -162,26 +180,23 @@ const OrderPage = () => {
                       </p>
                     </div>
                     <p className="text-lg">
-                      Rs {orderItem.product.price * orderItem.quantity}{" "}
+                      Rs {(orderItem.product.price * orderItem.quantity).toLocaleString('en-IN')}{" "}
                     </p>
                   </div>
                 ))}
               </div>
               <div className="border-t border-b border-gray-200 py-4">
                 <div className="flex justify-between items-center">
-                  <h3 className="text-lg font-semibold">Discount</h3>
+                  <h3 className="text-lg font-semibold">Dilivery Cost</h3>
                   <p className="text-lg">
-                    {order.orderItems[0].product.discount} %
+                    { shipingCost.toLocaleString('en-IN') }
                   </p>
                 </div>
                 <div className="flex justify-between items-center">
                   <h3 className="text-lg font-semibold">Total</h3>
                   <p className="text-lg">
                     Rs{" "}
-                    {order.orderItems[0].product.discount > 0
-                      ? order.totalPrice - (order.totalPrice *
-                        (order.orderItems[0].product.discount / 100))
-                      : order.totalPrice}
+                    { (order.totalPrice + shipingCost).toLocaleString('en-IN')}
                   </p>
                 </div>
               </div>

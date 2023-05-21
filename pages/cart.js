@@ -229,14 +229,14 @@ const cart = () => {
                       <div className="flex items-center space-x-4">
                         {product.discount === 0 ? (
                           <p className="text-sm">
-                            Rs {product.price * product.num}
+                            Rs {(product.price * product.num).toLocaleString('en-IN')}
                           </p>
                         ) : (
                           <p className="text-sm">
                             Rs{" "}
-                            {(product.price / 100) *
+                            {((product.price / 100) *
                               product.discount *
-                              product.num}
+                              product.num).toLocaleString('en-IN')}
                           </p>
                         )}
 
@@ -265,18 +265,18 @@ const cart = () => {
             <div className="mt-6 h-full rounded-md border bg-white p-6 shadow-md md:mt-0 md:w-1/3">
               <div className="mb-2 flex justify-between">
                 <p className="text-gray-700">Subtotal</p>
-                <p className="text-gray-700">Rs {totalPrice}</p>
+                <p className="text-gray-700">Rs {totalPrice.toLocaleString('en-IN')}</p>
               </div>
               <div className="flex justify-between">
                 <p className="text-gray-700">Shipping</p>
-                <p className="text-gray-700">Rs {cost}</p>
+                <p className="text-gray-700">Rs {cost.toLocaleString('en-IN')}</p>
               </div>
               <hr className="my-4" />
               <div className="flex justify-between">
                 <p className="text-md font-bold">Total</p>
                 <div className="">
                   <p className="mb-1 text-md font-bold">
-                    Rs {totalPrice + cost}
+                    Rs {(totalPrice + cost).toLocaleString('en-IN')}
                   </p>
                 </div>
               </div>

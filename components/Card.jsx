@@ -90,16 +90,16 @@ const Card = () => {
                             <div className="flex justify-around">
                               {product.discount === 0 ? (
                                 <span className="text-lg mx-2 font-500 text-green-900 tracking-wider whitespace-normal">
-                                  {product.price}
+                                  {product.price.toLocaleString('en-IN')}
                                 </span>
                               ) : (
                                 <>
                                   <span className="text-lg ml-2 font-500 text-green-900 tracking-wider whitespace-normal line-through">
-                                    {product.price}
+                                    {product.price.toLocaleString('en-IN')}
                                   </span>
                                   <span className="text-lg ml-2 font-500 text-green-900 tracking-wider whitespace-normal">
-                                    {product.price -
-                                      (product.price / 100) * product.discount}
+                                    {(product.price -
+                                      (product.price / 100) * product.discount).toLocaleString('en-IN')}
                                   </span>
                                 </>
                               )}

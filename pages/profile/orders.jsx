@@ -10,6 +10,7 @@ const Orders = () => {
   const [message, setMessage] = useState("");
   const [showAlert, setShowAlert] = useState(false);
   const [orderData, setOrderData] = useState([]);
+  const [shipingCost, setShipingCost] = useState(0)
 
   useEffect(() => {
     // Verify user
@@ -47,6 +48,23 @@ const Orders = () => {
   }, []);
 
   const cookieId = Cookies.get("user_id");
+
+  // get shipping cost
+  const getShippingCost = async () => {
+    try {
+      const response = await axios.get("/api/admin/shipping");
+      setShipingCost(response.data.data[0].shipping);
+    } catch (error) {
+      setMessage("Internet Connection not Stable. ");
+      setShowAlert(true);
+    }
+    setTimeout(() => {
+      setShowAlert(false);
+    }, 3000);
+  };
+  useEffect( () => {
+    getShippingCost();
+  }, [])
 
   // Get order history
   const orderHistory = async () => {
@@ -113,7 +131,7 @@ const Orders = () => {
                 <p className="text-gray-500">
                   Items: {order.orderItems.length}
                 </p>
-                <p className="text-gray-500">Total: Rs{order.totalPrice}</p>
+                <p className="text-gray-500">Total: Rs{(order.totalPrice + shipingCost).toLocaleString('en-IN')}</p>
               </div>
               <Link href={`/profile/order?id=${order._id}`} passHref>
                 <button className="mt-4 bg-themecolor hover:bg-blue-600 text-white py-2 px-4 rounded">

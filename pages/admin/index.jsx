@@ -10,6 +10,10 @@ const admin = () => {
   const [loading, setLoading] = useState(true);
   const [userData, setUserData] = useState([]);
   const [signups, setSignups] = useState("");
+  const [message, setMessage] = useState("");
+  const [showAlert, setShowAlert] = useState(false);
+  const [totalSalesCost, setTotalSalesCost] = useState(0);
+  const [salesData, setSalesData] = useState([]);
 
   // check auth
   async function checkAuth() {
@@ -23,16 +27,40 @@ const admin = () => {
   }
   checkAuth();
 
+  // get total sales
+  const totalSales = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.get("/api/admin/sales");
+      setTotalSalesCost(response.data.totalSales);
+      setSalesData(response.data.salesData);
+    } catch (error) {
+      console.log(error);
+      setMessage("Internet connection not stable. ");
+      setShowAlert(true);
+    }
+
+    setTimeout(() => {
+      setShowAlert(false);
+    }, 3000);
+  };
+  useEffect(() => {
+    totalSales();
+  }, []);
+
+
   // get users
   const getUsers = async () => {
     const response = await fetch("/api/admin");
-    setLoading(false)
+    setLoading(false);
     const userData = await response.json();
     setUserData(userData);
   };
   // render users
   const renderUsers = () => {
-    getUsers();
+    useEffect(() => {
+      getUsers();
+    }, []);
     return userData.slice(0, 5).map((user) => (
       <div className="flow-root">
         <ul role="list" className="divide-y divide-gray-200">
@@ -80,6 +108,31 @@ const admin = () => {
       {/* loading page  */}
       {loading ? <Loading /> : null}
 
+      {/* Popup alert */}
+      {showAlert && (
+        <div className="fixed top-0 left-0 lg:left-auto right-0 z-50 p-4">
+          <div className="mx-auto max-w-sm bg-white rounded-lg shadow-lg flex items-center">
+            <div className="flex-shrink-0">
+              <svg
+                className="h-8 w-8 text-gray-400"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M16 10a6 6 0 11-12 0 6 6 0 0112 0zm-6 5a1 1 0 100-2 1 1 0 000 2zm0-10a1 1 0 100-2 1 1 0 000 2zM5.78 14.55a4.002 4.002 0 01-1.513-1.513A5.984 5.984 0 013 10a6 6 0 1111.268 3H13a1 1 0 00-1 1v1a1 1 0 102 0v-1a3 3 0 00-3-3h-.268A5.992 5.992 0 015.78 14.55zM10 12a1 1 0 100-2 1 1 0 000 2z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </div>
+            <div className="ml-4">
+              <div className="mt-2 mx-2 text-sm text-gray-500">{message}</div>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div>
         <div className="flex overflow-hidden bg-white pt-16">
           <div
@@ -93,29 +146,15 @@ const admin = () => {
                     <div className="flex items-center justify-between mb-4">
                       <div className="flex-shrink-0">
                         <span className="text-2xl sm:text-3xl leading-none font-bold text-gray-900">
-                          $45,385
+                          Rs {totalSalesCost.toLocaleString('en-IN')}
                         </span>
                         <h3 className="text-base font-normal text-gray-500">
                           Sales this week
                         </h3>
                       </div>
-                      <div className="flex items-center justify-end flex-1 text-green-500 text-base font-bold">
-                        12.5%
-                        <svg
-                          className="w-5 h-5"
-                          fill="currentColor"
-                          viewBox="0 0 20 20"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            fillRule="evenodd"
-                            d="M5.293 7.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L6.707 7.707a1 1 0 01-1.414 0z"
-                            clipRule="evenodd"
-                          ></path>
-                        </svg>
-                      </div>
                     </div>
-                    <div id="main-chart"></div>
+                    <div id="main-chart">
+                    </div>
                   </div>
                   <div className="bg-white shadow rounded-md p-4 sm:p-6 xl:p-8 ">
                     <div className="mb-4 flex items-center justify-between">
@@ -271,7 +310,7 @@ const admin = () => {
                   </div>
                 </div>
                 <div className="mt-4 w-full grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-                  <div className="bg-white shadow rounded-md p-4 sm:p-6 xl:p-8 ">
+                  {/* <div className="bg-white shadow rounded-md p-4 sm:p-6 xl:p-8 ">
                     <div className="flex items-center">
                       <div className="flex-shrink-0">
                         <span className="text-2xl sm:text-3xl leading-none font-bold text-gray-900">
@@ -297,12 +336,12 @@ const admin = () => {
                         </svg>
                       </div>
                     </div>
-                  </div>
-                  <div className="bg-white shadow rounded-md p-4 sm:p-6 xl:p-8 ">
+                  </div> */}
+                  {/* <div className="bg-white shadow rounded-md p-4 sm:p-6 xl:p-8 ">
                     <div className="flex items-center">
                       <div className="flex-shrink-0">
                         <span className="text-2xl sm:text-3xl leading-none font-bold text-gray-900">
-                        245
+                          245
                         </span>
                         <h3 className="text-base font-normal text-gray-500">
                           Visitors Today
@@ -324,7 +363,7 @@ const admin = () => {
                         </svg>
                       </div>
                     </div>
-                  </div>
+                  </div> */}
                   <div className="bg-white shadow rounded-md p-4 sm:p-6 xl:p-8 ">
                     <div className="flex items-center">
                       <div className="flex-shrink-0">
