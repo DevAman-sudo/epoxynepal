@@ -4,6 +4,7 @@ import Cookies from "js-cookie";
 import Loading from "../../components/Loading";
 import axios from "axios";
 import { CircularProgress } from "@material-ui/core";
+import format from "date-fns/format";
 
 const profile = () => {
   const [loading, setLoading] = useState(true);
@@ -83,10 +84,8 @@ const profile = () => {
 
     try {
       const response = await axios.get(`/api/order?id=${cookieId}`)
-      console.log(response)
       setCartData(response.data);
       setUserData(response.data);
-      console.log(response)
       setCircleLoading(false);
 
       setLoading(false);
@@ -202,13 +201,13 @@ const profile = () => {
                               scope="col"
                               className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                             >
-                              Image
+                              Id
                             </th>
                             <th
                               scope="col"
                               className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                             >
-                              Quantity
+                              Date
                             </th>
                             <th
                               scope="col"
@@ -225,37 +224,33 @@ const profile = () => {
                           </tr>
                         </thead>
                         <tbody className="bg-white divide-y divide-gray-200">
-                          {cartData.map((order) => (
+                          {cartData.reverse().slice(0, 10).map((order) => (
                             <tr key={order._id}>
                               <td className="px-6 py-4 whitespace-nowrap">
-                                <img
-                                  className="md:w-12 md:h-auto"
-                                  src={order.image}
-                                  alt="img"
-                                />
+                               { order._id }
                               </td>
                               <td className="px-6 py-4 whitespace-nowrap">
                                 <div className="text-sm text-gray-500">
-                                  {order.num}
+                                {format(new Date(order.dateOrdered), "MM/dd/yyyy")}
                                 </div>
                               </td>
                               <td className="px-6 py-4 whitespace-nowrap">
                                 <div className="text-sm text-gray-900">
-                                  {order.price * order.num}
+                                  {order.totalPrice.toLocaleString("en-IN")}
                                 </div>
                               </td>
                               <td className="px-6 py-4 whitespace-nowrap">
                                 <div className="text-sm text-gray-900">
-                                  Preparing ...
+                                  {order.status}
                                 </div>
                               </td>
                             </tr>
                           ))}
                         </tbody>
                       </table>
-                      <p className=" text-gray-500 tracking-wider ">
+                      {/* <p className=" text-gray-500 tracking-wider ">
                         note: dilivery cost will be added
-                      </p>
+                      </p> */}
                     </div>
                   </div>
                 </div>

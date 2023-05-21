@@ -3,6 +3,7 @@ import Router from "next/router";
 import React from "react";
 import axios from "axios";
 import { useState, useEffect } from "react";
+import format from "date-fns/format";
 
 import Loading from "../../components/Loading";
 
@@ -14,6 +15,7 @@ const admin = () => {
   const [showAlert, setShowAlert] = useState(false);
   const [totalSalesCost, setTotalSalesCost] = useState(0);
   const [salesData, setSalesData] = useState([]);
+  const [orderData, setOrderData] = useState([]);
 
   // check auth
   async function checkAuth() {
@@ -26,6 +28,7 @@ const admin = () => {
     }
   }
   checkAuth();
+  
 
   // get total sales
   const totalSales = async () => {
@@ -48,6 +51,23 @@ const admin = () => {
     totalSales();
   }, []);
 
+  // get orders details
+  const getOrders = async () => {
+    try {
+      const response = await axios.get("/api/admin/orders");
+      setOrderData(response.data);
+    } catch (error) {
+      console.log(error);
+      setMessage("Internet connection not stable. ");
+      setShowAlert(true);
+    }
+    setTimeout(() => {
+      setShowAlert(false);
+    }, 3000);
+  };
+  useEffect(() => {
+    getOrders();
+  }, []);
 
   // get users
   const getUsers = async () => {
@@ -82,6 +102,7 @@ const admin = () => {
                     EMAIL: {user.email}
                   </a>
                 </p>
+               
               </div>
             </div>
           </li>
@@ -146,15 +167,14 @@ const admin = () => {
                     <div className="flex items-center justify-between mb-4">
                       <div className="flex-shrink-0">
                         <span className="text-2xl sm:text-3xl leading-none font-bold text-gray-900">
-                          Rs {totalSalesCost.toLocaleString('en-IN')}
+                          Rs {totalSalesCost.toLocaleString("en-IN")}
                         </span>
                         <h3 className="text-base font-normal text-gray-500">
                           Sales this week
                         </h3>
                       </div>
                     </div>
-                    <div id="main-chart">
-                    </div>
+                    <div id="main-chart"></div>
                   </div>
                   <div className="bg-white shadow rounded-md p-4 sm:p-6 xl:p-8 ">
                     <div className="mb-4 flex items-center justify-between">
@@ -168,7 +188,7 @@ const admin = () => {
                       </div>
                       <div className="flex-shrink-0">
                         <a
-                          href="#"
+                          href="/admin/payment"
                           className="text-sm font-medium text-cyan-600 hover:bg-gray-100 rounded-md p-2"
                         >
                           View all
@@ -179,6 +199,7 @@ const admin = () => {
                       <div className="overflow-x-auto rounded-md">
                         <div className="align-middle inline-block min-w-full">
                           <div className="shadow overflow-hidden sm:rounded-md">
+                            <p>NOTE: amount without shipping cost</p>
                             <table className="min-w-full divide-y divide-gray-200">
                               <thead className="bg-gray-50">
                                 <tr>
@@ -203,104 +224,24 @@ const admin = () => {
                                 </tr>
                               </thead>
                               <tbody className="bg-white">
-                                <tr>
-                                  <td className="p-4 whitespace-nowrap text-sm font-normal text-gray-900">
-                                    Payment from{" "}
-                                    <span className="font-semibold">
-                                      Bonnie Green
-                                    </span>
-                                  </td>
-                                  <td className="p-4 whitespace-nowrap text-sm font-normal text-gray-500">
-                                    Apr 23 ,2021
-                                  </td>
-                                  <td className="p-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                                    $2300
-                                  </td>
-                                </tr>
-                                <tr className="bg-gray-50">
-                                  <td className="p-4 whitespace-nowrap text-sm font-normal text-gray-900 rounded-md rounded-left">
-                                    Payment refund to{" "}
-                                    <span className="font-semibold">
-                                      #00910
-                                    </span>
-                                  </td>
-                                  <td className="p-4 whitespace-nowrap text-sm font-normal text-gray-500">
-                                    Apr 23 ,2021
-                                  </td>
-                                  <td className="p-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                                    -$670
-                                  </td>
-                                </tr>
-                                <tr>
-                                  <td className="p-4 whitespace-nowrap text-sm font-normal text-gray-900">
-                                    Payment failed from{" "}
-                                    <span className="font-semibold">
-                                      #087651
-                                    </span>
-                                  </td>
-                                  <td className="p-4 whitespace-nowrap text-sm font-normal text-gray-500">
-                                    Apr 18 ,2021
-                                  </td>
-                                  <td className="p-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                                    $234
-                                  </td>
-                                </tr>
-                                <tr className="bg-gray-50">
-                                  <td className="p-4 whitespace-nowrap text-sm font-normal text-gray-900 rounded-md rounded-left">
-                                    Payment from{" "}
-                                    <span className="font-semibold">
-                                      Lana Byrd
-                                    </span>
-                                  </td>
-                                  <td className="p-4 whitespace-nowrap text-sm font-normal text-gray-500">
-                                    Apr 15 ,2021
-                                  </td>
-                                  <td className="p-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                                    $5000
-                                  </td>
-                                </tr>
-                                <tr>
-                                  <td className="p-4 whitespace-nowrap text-sm font-normal text-gray-900">
-                                    Payment from{" "}
-                                    <span className="font-semibold">
-                                      Jese Leos
-                                    </span>
-                                  </td>
-                                  <td className="p-4 whitespace-nowrap text-sm font-normal text-gray-500">
-                                    Apr 15 ,2021
-                                  </td>
-                                  <td className="p-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                                    $2300
-                                  </td>
-                                </tr>
-                                <tr className="bg-gray-50">
-                                  <td className="p-4 whitespace-nowrap text-sm font-normal text-gray-900 rounded-md rounded-left">
-                                    Payment from{" "}
-                                    <span className="font-semibold">
-                                      THEMESBERG LLC
-                                    </span>
-                                  </td>
-                                  <td className="p-4 whitespace-nowrap text-sm font-normal text-gray-500">
-                                    Apr 11 ,2021
-                                  </td>
-                                  <td className="p-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                                    $560
-                                  </td>
-                                </tr>
-                                <tr>
-                                  <td className="p-4 whitespace-nowrap text-sm font-normal text-gray-900">
-                                    Payment from{" "}
-                                    <span className="font-semibold">
-                                      Lana Lysle
-                                    </span>
-                                  </td>
-                                  <td className="p-4 whitespace-nowrap text-sm font-normal text-gray-500">
-                                    Apr 6 ,2021
-                                  </td>
-                                  <td className="p-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                                    $1437
-                                  </td>
-                                </tr>
+                                {orderData.slice(0, 10).map((order) => (
+                                  <tr>
+                                    <td className="p-4 whitespace-nowrap text-sm font-normal text-gray-900">
+                                      Payment from{" "}
+                                      <span className="font-semibold">
+                                        {order.user.name}
+                                      </span>
+                                    </td>
+                                    <td className="p-4 whitespace-nowrap text-sm font-normal text-gray-500">
+                                    {format(new Date(order.dateOrdered), "MM/dd/yyyy")}
+                                    </td>
+                                    <td className="p-4 whitespace-nowrap text-sm font-semibold text-gray-900">
+                                      Rs{" "}
+                                      {order.totalPrice.toLocaleString("en-IN")}
+                                    </td>
+                                  </tr>
+                                ))}
+                                
                               </tbody>
                             </table>
                           </div>

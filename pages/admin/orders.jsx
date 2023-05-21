@@ -1,18 +1,22 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import axios from "axios";
 import { format } from "date-fns";
 import Loading from "../../components/Loading";
 import { useRouter } from "next/router";
 import Router from "next/router";
+import AppContext from "../../components/context/AppContext";
 
 const Orders = () => {
+  const context = useContext(AppContext)
   const router = useRouter();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [shippingCost, setShippingCost] = useState(0);
   const [message, setMessage] = useState("");
   const [showAlert, setShowAlert] = useState(false);
+  const [data, setData] = useState([]);
+  const [queryMessage, setQueryMessage] = useState("");
 
   const userID = Cookies.get("user_id");
 
@@ -47,6 +51,7 @@ const Orders = () => {
       const response = await axios.get("/api/admin/orders");
       const ordersData = response.data;
       setOrders(ordersData);
+      setData(ordersData);
       setLoading(false);
       getShippingCost(); // Call getShippingCost after fetching orders
     } catch (error) {
@@ -77,6 +82,19 @@ const Orders = () => {
       setShowAlert(false);
     }, 3000);
   };
+
+  // handle search filter
+  useEffect(() => {
+    const filteredData = data.filter((item) =>
+      item._id.toLowerCase().includes(context.query.toLowerCase())
+    );
+    if (filteredData.length == 0) {
+      setQueryMessage("Data not Found");
+    } else {
+      setQueryMessage(context.query);
+    }
+    setOrders(filteredData);
+  }, [context.query]);
 
   return (
     <>
@@ -109,6 +127,9 @@ const Orders = () => {
       )}
 
       <div className="container mx-auto p-4">
+        <p className="text-xl font-400 text-grey-500 tracking-wider my-2 ">
+          Search Query: {queryMessage}
+        </p>
         <h1 className="text-2xl font-bold mb-4">Order Tracking</h1>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {orders.map((order) => (
@@ -175,7 +196,7 @@ const Orders = () => {
                   Total Amount:
                 </span>
                 <span className="ml-auto text-sm font-medium text-gray-800">
-                  Rs {order.totalPrice.toLocaleString('en-IN')}
+                  Rs {order.totalPrice.toLocaleString("en-IN")}
                 </span>
               </div>
 
@@ -184,7 +205,7 @@ const Orders = () => {
                   Shipping Cost:
                 </span>
                 <span className="ml-auto text-sm font-medium text-gray-800">
-                  {shippingCost.toLocaleString('en-IN')}
+                  {shippingCost.toLocaleString("en-IN")}
                 </span>
               </div>
 
@@ -193,7 +214,7 @@ const Orders = () => {
                   Final Cost:
                 </span>
                 <span className="ml-auto text-sm font-medium text-gray-800">
-                  {(order.totalPrice + shippingCost).toLocaleString('en-IN')}
+                  {(order.totalPrice + shippingCost).toLocaleString("en-IN")}
                 </span>
               </div>
 
@@ -217,7 +238,6 @@ const Orders = () => {
                   <option value="Shipped">Shipped</option>
                   <option value="Delivered">Delivered</option>
                 </select>
-               
               </div>
 
               {/* Order products */}
